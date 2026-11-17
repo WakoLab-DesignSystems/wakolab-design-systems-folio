@@ -34,6 +34,14 @@ test("menu: reaches every screen, marks the active one, keeps mode and configura
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Coastal temperatures");
   await expect(page.locator('[data-wds="folio"]')).toHaveAttribute("data-mode", "dark");
   await expect(page.locator(".wl-logo-mark")).toBeVisible(); // the example configuration is applied again
+  // Review F-R2 on #5: the editorial frame's home link keeps mode and configuration.
+  await page.getByRole("navigation", { name: "Demo screens" }).getByRole("link", { name: "Editorial frame", exact: true }).click();
+  await page.locator(".registration-page").waitFor();
+  await page.getByRole("link", { name: "Field Lab, overview" }).click();
+  await expect(page).toHaveURL(/#screen=overview&mode=dark&config=example$/);
+  await expect(page.locator('[data-wds="folio"]')).toHaveAttribute("data-mode", "dark");
+  await expect(page.getByRole("heading", { level: 1, name: "Folio" })).toBeVisible();
+  await expect(page.locator(".wl-logo-mark")).toBeVisible();
 });
 
 test("identity: Folio tokens, sans UI with a serif display, radii 8/12/pill, light-only card shadow, 150 ms motion, sticky filters and side card", async ({ page }) => {

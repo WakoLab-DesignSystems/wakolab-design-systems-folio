@@ -325,3 +325,27 @@ test("panel roles are not common roles: a Console-targeted file reports system, 
   const keys = await page.evaluate(() => (window as any).harness.diagnostics.map((d: any) => d.key));
   expect(keys).toEqual(expect.arrayContaining(["system", "colors.light.panel-ink"]));
 });
+
+// Review F-R1 on #5: an invalid font declaration (missing or empty family, empty files) is reported
+// structurally and the role keeps its default; family-only and family-with-file stay valid. Non-empty
+// values are used as written (never trimmed or judged).
+test("fonts: empty family or empty files keep the role's default and are reported; valid forms apply", async ({ page }) => {
+  await harness(page);
+  const fam = (el: string) => page.locator(`#a-${el}`).evaluate((e) => getComputedStyle(e).fontFamily);
+  const keys = () => page.evaluate(() => (window as any).harness.diagnostics.map((d: any) => d.key));
+  await mount(page, "a", "slot-a", { mode: "light" });
+  await settle(page);
+  const def = { ui: await fam("ui"), display: await fam("display") };
+  await update(page, "a", { mode: "light", assetBase: "/design/", config: { ...base, fonts: {
+    ui: { family: "", files: [{ src: "fonts/example-sans.woff2" }] }, display: { family: "Example", files: [] } } } });
+  await settle(page);
+  expect(await fam("ui")).toBe(def.ui);
+  expect(await fam("display")).toBe(def.display);
+  expect(await keys()).toEqual(expect.arrayContaining(["fonts.ui.family", "fonts.display.files"]));
+  // Valid: family only (installed or host-loaded font, used as written, spaces kept) and family with a file.
+  await update(page, "a", { mode: "light", assetBase: "/design/", config: { ...base, fonts: {
+    ui: { family: " Host Face " }, display: { family: "Example", files: [{ src: "fonts/example-sans.woff2" }] } } } });
+  await settle(page);
+  expect(await fam("ui")).toMatch(/^" Host Face ",/);
+  expect(await fam("display")).toMatch(/^"?wds-folio-font-[0-9a-f]{8}"?,/);
+});

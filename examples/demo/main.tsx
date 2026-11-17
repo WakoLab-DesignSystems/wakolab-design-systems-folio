@@ -49,10 +49,10 @@ const ITEMS = [
 ];
 
 /* ───────── Shell and menu ───────── */
-function Header({ go }: { go: (s: Partial<DemoState>) => void }) {
+function Header({ state, go }: { state: DemoState; go: (s: Partial<DemoState>) => void }) {
   return (
     <FolioHeader
-      logo={<LogoSlot label="Field Lab" accessibleName="Field Lab, overview" href="#screen=overview" onHome={() => go({ screen: "overview" })} />}
+      logo={<LogoSlot label="Field Lab" accessibleName="Field Lab, overview" href={hashOf({ ...state, screen: "overview" })} onHome={() => go({ screen: "overview" })} />}
       tools={<>
         <ModeMenu label="Appearance" modeLabel="Mode" labels={{ light: "Light", dark: "Dark", system: "System" }} />
         <ToolButton icon="globe" label="Language" value="English" compact valueLang="en" />
@@ -74,7 +74,7 @@ function Menu({ state, go }: { state: DemoState; go: (s: Partial<DemoState>) => 
   );
 }
 function Shell({ state, go, children }: { state: DemoState; go: (s: Partial<DemoState>) => void; children: ReactNode }) {
-  return <FolioShell header={<><Header go={go} /><Menu state={state} go={go} /></>}>{children}</FolioShell>;
+  return <FolioShell header={<><Header state={state} go={go} /><Menu state={state} go={go} /></>}>{children}</FolioShell>;
 }
 
 /* ───────── Screens ───────── */
@@ -287,10 +287,11 @@ function ComponentsScreen() {
   );
 }
 
-function RegistrationScreen() {
+function RegistrationScreen({ state, go }: { state: DemoState; go: (s: Partial<DemoState>) => void }) {
+  // The home link keeps mode and configuration, like the menu (review F-R2 on folio#5).
   return (
     <RegistrationFrame screen="email"
-      brand={<LogoSlot label="Field Lab" accessibleName="Field Lab, overview" href="#screen=overview" />}
+      brand={<LogoSlot label="Field Lab" accessibleName="Field Lab, overview" href={hashOf({ ...state, screen: "overview" })} onHome={() => go({ screen: "overview" })} />}
       tools={<ModeMenu label="Appearance" modeLabel="Mode" labels={{ light: "Light", dark: "Dark", system: "System" }} />}
       eyebrow="Open community" title="Join the workspace" lead="One account for people and their tools. You can leave at any time."
       aside={<EditorialPanel label="Field Lab" eyebrow="Open community" title="Build things together, in the open."
@@ -330,7 +331,7 @@ function App() {
   const screens: Record<Screen, () => ReactNode> = {
     overview: () => <Overview state={state} go={go} />, collection: () => <CollectionScreen go={go} />, article: () => <ArticleScreen go={go} />,
     form: () => <FormScreen go={go} />, message: () => <MessageScreen go={go} />, states: () => <StatesScreen />,
-    components: () => <ComponentsScreen />, registration: () => <RegistrationScreen />,
+    components: () => <ComponentsScreen />, registration: () => <RegistrationScreen state={state} go={go} />,
   };
   return (
     <FolioRoot mode={state.mode} onModeChange={(mode) => go({ mode })} config={config} assetBase="/design/" icons={icons} className="demo-root">

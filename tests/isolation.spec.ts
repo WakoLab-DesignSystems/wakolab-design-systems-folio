@@ -130,8 +130,10 @@ test("two roots: modes independent; overlays keep each root's scrim; theme switc
     await expect(page.locator(`#${id}-open-dialog`)).toBeFocused();
   }
   await update(page, "a", { mode: "dark" });
-  expect((await surf("a"))[1]).toBe(db[1]);
-  expect((await surf("b"))[0]).toBe("dark");
+  // Auto-waiting: the switch is applied at the next render (review on folio#5: an immediate snapshot
+  // failed once in Revex's run and passed on rerun).
+  await expect.poll(() => surf("a")).toEqual(["dark", db[1]]);
+  await expect.poll(() => surf("b")).toEqual(db);
 });
 
 test("popovers: per root, nested Escape closes the innermost only, outside press closes without moving focus, listeners removed", async ({ page }) => {

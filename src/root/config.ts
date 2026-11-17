@@ -6,7 +6,8 @@
  * are reported.
  * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
  * src/root/config.ts. Changes for Folio: system "folio"; the Folio-declared colour roles panel,
- * on-panel and panel-accent (standard CONFIGURATION §2.1 at c2ca848d0b44c62a2864f1c23d99b7ec7d34bdc1). */
+ * on-panel and panel-accent (standard CONFIGURATION §2.1 at c2ca848d0b44c62a2864f1c23d99b7ec7d34bdc1);
+ * an empty font `family` or an empty `files` list is reported and leaves the role's default (F-R1). */
 
 export const COLOR_ROLES = [
   "bg", "surface", "surface-2", "ink", "muted", "border", "control",
@@ -77,6 +78,11 @@ export function normalizeConfig(input: unknown, assetBase: string | undefined, r
       const key = `fonts.${role}`;
       if (!(FONT_ROLES as readonly string[]).includes(role)) { report({ key, message: "unknown role; ignored" }); continue; }
       if (!isObject(setting) || typeof setting.family !== "string") { report({ key, message: "needs a string `family`; ignored" }); continue; }
+      // Contract (CONFIGURATION §3; review F-R1 on folio#5): `family` is non-empty and `files`, when
+      // present, has at least one file. Otherwise the role keeps its default. Non-empty values are
+      // used exactly as written (never trimmed or judged).
+      if (setting.family === "") { report({ key: `${key}.family`, message: "must not be empty; the default stays in use" }); continue; }
+      if (Array.isArray(setting.files) && setting.files.length === 0) { report({ key: `${key}.files`, message: "must contain at least one file; the default stays in use" }); continue; }
       let files: (FontFile & { url: string })[] | undefined;
       if (setting.files !== undefined) {
         if (!Array.isArray(setting.files)) { report({ key: `${key}.files`, message: "must be an array; ignored" }); continue; }
