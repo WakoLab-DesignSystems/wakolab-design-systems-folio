@@ -2,7 +2,23 @@
 
 Evidence for review of [#1](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/issues/1); not an acceptance decision.
 
-**The strict gate (no difference except listed deliberate ones) does not pass.** Ten cases keep small stable differences whose cause is not identified. No tolerance and no pixel exception apply. In particular, the bounded exception that Orc granted to Console (console#5) concerns Console's recorded clusters only and is **not** transposed here. The decision is for review and Orc.
+**The strict gate (no difference except listed deliberate ones) does not pass**, and the script still reports every nonzero pixel as a failure. Ten cases keep small stable differences whose cause is not identified.
+
+**Bounded exception (Orc, [decision 6952533664](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/issues/1#issuecomment-6952533664), after Revex's [review 5941336931](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/pull/5#pullrequestreview-5941336931)).**
+- **What it covers:** only the ten case/coordinate/cluster/amplitude sets recorded in `docs/parity/run-1` (5–59 pixels, per-case maximum delta at most 7/255), at the reviewed source.
+- **What it accepts:** the documented edge residue for this extraction; it does not explain its cause.
+- **What it does not do:**
+  - change any threshold;
+  - extend to other screens, states, browsers or later rendering changes;
+  - import the exception granted to Console (console#5), which is not transposed.
+- **Reference-variable case:** loading / light / 768 (0 → 108) is not part of the exception. It is attributed to variation on the reference side.
+
+> **Correction note (after review 5941336931).** The first account gave "86 of 96" without qualification, both here and in the PR and issue summaries. That figure is the **first launch only**:
+> - first launch: **86/96** pixel-identical;
+> - second launch: **85/96**;
+> - identical in both launches: **85** cases.
+>
+> The ten stable cases and the one reference-variable case (loading / light / 768) are disjoint. Raw data and crops are unchanged.
 
 ## Run 1 — Des, candidate built from the sources at `0588fbd`
 
@@ -60,7 +76,10 @@ Evidence for review of [#1](https://github.com/WakoLab-DesignSystems/wakolab-des
 
 ¹ Loading / light / 768: 0 in the first launch and 108 in the second. The baseline differs from itself by 108 pixels across launches; the candidate self-control is 0. This is variability on the baseline side; the candidate matches the first baseline exactly.
 
-- **86 of 96** comparisons are pixel-identical in the first launch.
+- **Counts:**
+  - **86 of 96** comparisons are pixel-identical in the first launch;
+  - **85 of 96** in the second launch;
+  - **85** are identical in both launches.
 - **Form, component sheet, confirmation dialog, registration frame, open popover with visible toast, collection, not-found, message and dialog:** identical in every case, in both launches.
 - **10 cases with stable differences:**
   - loading in dark at all widths;
@@ -75,7 +94,16 @@ Evidence for review of [#1](https://github.com/WakoLab-DesignSystems/wakolab-des
   - There is no displacement or content difference in the crops.
 - **Cause not identified.** The collection screen shows the same filters column without any difference, and the same components are pixel-identical on the fixture screens. No further investigation was done, as instructed (bounded evidence instead of open-ended investigation).
 
-Deliberate differences: none.
+Deliberate differences: none. Bounded exception: the ten stable cases above, as recorded (see the top of this page).
+
+### Applicability after the correction delta (`a19fa95..ea4ce28`)
+
+The F-R1/F-R2 corrections change:
+- `src/root/config.ts`: only invalid font declarations, which no parity screen uses;
+- the end-of-file blank line of `src/styles/theme.css`: the built `dist/folio.css` is **byte-identical** to the reviewed build (same SHA-256 `d9c84a35…`);
+- the demo, tests and documentation.
+
+No rendering or capture input of the parity screens changed, so run 1 was **not re-captured**. Its evidence is reused as recorded (Des, Chromium 153.0.8010.12). Revex reviews the continued applicability of the exception.
 
 ### Coverage and limits
 

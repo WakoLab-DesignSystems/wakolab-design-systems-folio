@@ -106,10 +106,10 @@ Pass a parsed `design-config.json` as `config` (see the [schema](config.schema.j
 - **Omitted roles** keep their own same-mode defaults. The only exception is `action-pressed`, which follows the effective `action-hover`.
 - **No effect in Folio:** `accent`; no element uses it.
 
-**Fonts.** Roles are `ui`, `display`, `prose` and `code`, each with your own files (`src`, plus optional `weight`, `style`, `stretch`, `unicodeRange`).
+**Fonts.** Roles are `ui`, `display`, `prose` and `code`. Each needs a non-empty `family`, and optionally your own files (at least one when `files` is given: `src`, plus optional `weight`, `style`, `stretch`, `unicodeRange`).
 - Files are registered under an internal family name, so your `family` label never collides with other fonts.
 - Each role keeps its own default when omitted or removed.
-- A file that fails to load restores that role's default and is reported.
+- A file that fails to load, an empty `family` or an empty `files` list restores that role's default and is reported.
 - `code` has no visible effect in Folio.
 
 **Logo.**
@@ -144,7 +144,7 @@ Open `http://127.0.0.1:5191/demo/`.
 | Command | What it checks |
 |---|---|
 | `npm run check` | Type check |
-| `npm test` | Package closure (`check-dist`), icon artwork exclusion (`check-artwork`), contrast of the shipped defaults (`theme-tokens`, 52 pairs), and the Playwright suites: defaults (axe, reflow, identity, menu, panel, overlays, motion), configuration (including the panel roles) and isolation |
+| `npm test` | Package closure (`check-dist`), icon artwork exclusion (`check-artwork`), configuration schema with positive and negative cases (`check-schema`), contrast of the shipped defaults (`theme-tokens`, 52 pairs), and the Playwright suites: defaults (axe, reflow, identity, menu, panel, overlays, motion), configuration (including the panel roles) and isolation |
 | `npm run consumer` | Clones this repository into an empty folder, installs and checks it there, packs it, then builds and checks two neutral consumer apps (tarball and Git dependency) |
 | `npm run parity` | Visual parity with the frontend's Folio baselines (needs a separate frontend checkout; see [docs/PARITY.md](docs/PARITY.md)) |
 
