@@ -1,12 +1,16 @@
-/* Content-free two-column frame for multi-step sign-up or onboarding forms.
+/* Two-column editorial frame for multi-step sign-up or onboarding forms (Folio).
  * Adapted from WakoLab/wakolab-front at e492bec9ced8893d6940879aa8186ac75a48a272,
  * web/src/features/RegistrationShell.tsx (standard EXTRACTION_MATRIX §5.4, Form row; review S1 on #5).
  * Kept: the DOM structure, class names and order of the frame (page, heading, layout, editorial
  * side, workspace with its form column, status area and footnote).
  * Changes for standalone use: every piece of content is a slot or prop. The registration flow
  * (screens, profile, sign-out, messages, trace references), the WakoLab brand, the appearance and
- * language controls, the editorial texts and all i18n stay in the frontend. The editorial side no
- * longer carries `data-surface="dark"`, which only Folio styles. */
+ * language controls, the editorial texts and all i18n stay in the frontend.
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+ * src/compositions/registration.tsx. Changes for Folio (standard KIT_PROPOSAL §8): the editorial side keeps
+ * the source's `data-surface="dark"` (Folio's panel and its focus outline); EditorialPanel adds the source's
+ * editorial content structure as slots, with the hard-coded "W" monogram (WakoLab branding) replaced by a
+ * `monogram` slot whose default is the first letter of `label`. */
 import type { ReactNode, Ref } from "react";
 
 export function RegistrationFrame({ brand, tools, eyebrow, title, lead, aside, steps, heading, headingId = "title", headingRef, description, children, status, footnote, screen }: {
@@ -47,7 +51,7 @@ export function RegistrationFrame({ brand, tools, eyebrow, title, lead, aside, s
           {lead !== undefined && <p className="text-muted max-w-sm self-end">{lead}</p>}
         </div>
         <section className="registration-layout">
-          <aside className="registration-editorial">{aside}</aside>
+          <aside data-surface="dark" className="registration-editorial">{aside}</aside>
           <div className="registration-workspace">
             {steps}
             <section className="max-w-form mx-auto" aria-labelledby={headingId}>
@@ -61,5 +65,31 @@ export function RegistrationFrame({ brand, tools, eyebrow, title, lead, aside, s
         </section>
       </main>
     </div>
+  );
+}
+
+/** Editorial content of the frame's side (source: the aside of RegistrationShell): eyebrow, heading,
+ *  text, a decorative monogram (visible from 64rem) and a closing line. Folio colours it with the
+ *  panel roles (panel, on-panel, panel-accent). */
+export function EditorialPanel({ eyebrow, title, text, label, monogram, footer }: {
+  eyebrow?: ReactNode; title: ReactNode; text?: ReactNode;
+  /** Product label; its first letter is the default monogram. */
+  label: string;
+  /** Replaces the default monogram (first letter of `label`). Decorative: hidden from assistive technology. */
+  monogram?: ReactNode;
+  footer?: ReactNode;
+}) {
+  return (
+    <>
+      <div>
+        {eyebrow !== undefined && <p className="editorial-eyebrow mb-8">{eyebrow}</p>}
+        <h2 className="text-4xl leading-tight">{title}</h2>
+        {text !== undefined && <p className="mt-6">{text}</p>}
+      </div>
+      <div aria-hidden="true" className="editorial-art">
+        <span className="editorial-monogram">{monogram ?? Array.from(label.trim())[0] ?? ""}</span>
+      </div>
+      {footer !== undefined && <p>{footer}</p>}
+    </>
   );
 }

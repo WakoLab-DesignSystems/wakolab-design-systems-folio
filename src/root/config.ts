@@ -1,15 +1,20 @@
-/* Explicit configuration (design-config.json) for Console.
+/* Explicit configuration (design-config.json) for Folio.
  * Original code implementing the configuration specification of the standard repository
  * (WakoLab-DesignSystems/wakolab-design-systems-standard docs/CONFIGURATION.md at
  * 6dc2a7a38cc35b34f737c49e79077b025e47ab6c). Values are used exactly as written; omitted keys keep
- * Console's defaults; nothing is derived, checked, corrected or approved. Only structural problems
- * are reported. */
+ * Folio's defaults; nothing is derived, checked, corrected or approved. Only structural problems
+ * are reported.
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+ * src/root/config.ts. Changes for Folio: system "folio"; the Folio-declared colour roles panel,
+ * on-panel and panel-accent (standard CONFIGURATION §2.1 at c2ca848d0b44c62a2864f1c23d99b7ec7d34bdc1). */
 
 export const COLOR_ROLES = [
   "bg", "surface", "surface-2", "ink", "muted", "border", "control",
   "action", "action-hover", "action-pressed", "on-action", "link", "focus", "accent",
   "success", "success-soft", "warning", "warning-soft", "danger", "danger-soft", "info", "info-soft", "on-danger",
   "scrim", "shadow-card", "shadow-pop",
+  // Folio-declared roles (CONFIGURATION §2.1): the editorial panel. Each keeps its own default.
+  "panel", "on-panel", "panel-accent",
 ] as const;
 export type ColorRole = (typeof COLOR_ROLES)[number];
 export const FONT_ROLES = ["ui", "display", "prose", "code"] as const;
@@ -52,7 +57,7 @@ export function normalizeConfig(input: unknown, assetBase: string | undefined, r
   if (input === undefined || input === null) return out;
   if (!isObject(input)) { report({ key: "(root)", message: "configuration must be a JSON object; ignored" }); return out; }
   for (const k of Object.keys(input)) if (!["system", "systemVersion", "colors", "fonts", "logo", "$schema"].includes(k)) report({ key: k, message: "unknown key; ignored" });
-  if (input.system !== "console") report({ key: "system", message: `expected "console", got ${JSON.stringify(input.system)}` });
+  if (input.system !== "folio") report({ key: "system", message: `expected "folio", got ${JSON.stringify(input.system)}` });
   if (typeof input.systemVersion !== "string") report({ key: "systemVersion", message: "required string is missing" });
   if (input.colors !== undefined) {
     if (!isObject(input.colors)) report({ key: "colors", message: "must be an object; ignored" });

@@ -1,4 +1,6 @@
 // Icon artwork exclusion check (standard EXTRACTION_MATRIX §10, E4 at 6dc2a7a; review R1 on #5).
+// Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+// scripts/check-artwork.mjs, unchanged (same excluded frontend icons, same hash file).
 // Original code. Fails when:
 //   1. any tracked text file, or any file of the npm package, contains SVG path data whose hash
 //      matches an excluded frontend icon (scripts/excluded-icon-hashes.json holds only hashes);

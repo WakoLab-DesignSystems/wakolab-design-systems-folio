@@ -6,7 +6,8 @@
  *  - a registration is deleted only when no root uses its family any more;
  *  - a face that fails to load marks its whole set as failed and notifies every root using it, so
  *    each one can fall back to the role's default (configuration §7; review R3 on #5). A failed set
- *    stays failed until it is released by every root; a new configuration (other files) is a new set. */
+ *    stays failed until it is released by every root; a new configuration (other files) is a new set.
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936, src/root/fonts.ts; internal family prefix wds-folio-font-. */
 import type { FontFile } from "./config";
 
 type ResolvedFile = FontFile & { url: string };
@@ -26,7 +27,7 @@ export function familyForFaceSet(files: ResolvedFile[]): string {
   const canon = files
     .map((f) => [f.url, f.weight ?? "", f.style ?? "", f.stretch ?? "", f.unicodeRange ?? ""])
     .sort((a, b) => (a.join("\u0000") < b.join("\u0000") ? -1 : 1));
-  return `wds-console-font-${fnv1a(JSON.stringify(canon))}`;
+  return `wds-folio-font-${fnv1a(JSON.stringify(canon))}`;
 }
 
 /** Registers (or reuses) the face set and returns its internal family. `onError` is called for

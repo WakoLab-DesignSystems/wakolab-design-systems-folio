@@ -1,25 +1,29 @@
-/* ConsoleRoot: the element every Console screen renders inside.
+/* FolioRoot: the element every Folio screen renders inside.
  * Replaces the document-level ThemeProvider of WakoLab/wakolab-front
  * (web/src/theme/ThemeProvider.tsx at e492bec9ced8893d6940879aa8186ac75a48a272) for standalone use
  * (standard EXTRACTION_MATRIX §4 Provider and Fonts, §5.7):
- *  - renders <div data-wds="console" data-mode="light|dark">; nothing is written to <html> or <body>;
+ *  - renders <div data-wds="folio" data-mode="light|dark">; nothing is written to <html> or <body>;
  *  - mode is light, dark or system (system follows prefers-color-scheme with a listener);
  *    persistence only when `storageKey` is given (no default key); no side effect at import;
  *  - applies the explicit configuration (colours as custom properties for the current mode,
  *    fonts through internal face-set families, logo files to the logo slot);
- *  - provides the icon set (icon path data is not shipped, see components/icons.tsx). */
+ *  - provides the icon set (icon path data is not shipped, see components/icons.tsx).
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936, src/root/ConsoleRoot.tsx; Console names → Folio names, root data-wds="folio". */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { ConsoleContext, type Mode, type ResolvedMode } from "./context";
+import { FolioContext, type Mode, type ResolvedMode } from "./context";
 import { normalizeConfig, type DesignConfig, type Diagnostic, type FontRole } from "./config";
 import { acquireFaceSet, releaseFaceSet } from "./fonts";
 import { IconSetProvider, type IconSet } from "../components/icons";
 
-const MONO_FALLBACK = 'ui-monospace, "SFMono-Regular", Menlo, Consolas, var(--wl-fallback-sans)';
+// Fallback stacks appended to a configured font, as in the source's Folio tokens (themes.css
+// lines 84–87): sans roles fall back to the shared sans stack, display to the serif stack.
+const SANS_FALLBACK = "var(--wl-fallback-sans)";
+const SERIF_FALLBACK = '"Noto Serif", Georgia, var(--wl-fallback-sans)';
 const FONT_VARS: Record<FontRole, { name: string; fallback: string }> = {
-  ui: { name: "--wl-font-ui", fallback: MONO_FALLBACK },
-  display: { name: "--wl-font-display", fallback: MONO_FALLBACK },
-  code: { name: "--wl-font-code", fallback: MONO_FALLBACK },
-  prose: { name: "--wl-font-prose", fallback: "var(--wl-fallback-sans)" },
+  ui: { name: "--wl-font-ui", fallback: SANS_FALLBACK },
+  display: { name: "--wl-font-display", fallback: SERIF_FALLBACK },
+  code: { name: "--wl-font-code", fallback: SANS_FALLBACK },
+  prose: { name: "--wl-font-prose", fallback: SANS_FALLBACK },
 };
 const quote = (family: string) => JSON.stringify(family);
 
@@ -31,7 +35,7 @@ function systemMode(): ResolvedMode {
   return typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-export interface ConsoleRootProps {
+export interface FolioRootProps {
   children?: ReactNode;
   /** Controlled mode. Omit it to let the root manage its own mode (starting at `defaultMode`). */
   mode?: Mode;
@@ -43,7 +47,7 @@ export interface ConsoleRootProps {
   config?: DesignConfig | unknown;
   /** Base URL for relative asset paths in the configuration (for example "/design/"). */
   assetBase?: string;
-  /** Icon path data by name. Console ships no icon artwork (provenance unresolved). */
+  /** Icon path data by name. Folio ships no icon artwork (provenance unresolved). */
   icons?: IconSet;
   /** Structural problems in the configuration. Defaults to console.warn. */
   onDiagnostic?: (d: Diagnostic) => void;
@@ -52,7 +56,7 @@ export interface ConsoleRootProps {
   id?: string;
 }
 
-export function ConsoleRoot({ children, mode: controlled, defaultMode = "system", onModeChange, storageKey, config, assetBase, icons, onDiagnostic, className, style, id }: ConsoleRootProps) {
+export function FolioRoot({ children, mode: controlled, defaultMode = "system", onModeChange, storageKey, config, assetBase, icons, onDiagnostic, className, style, id }: FolioRootProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [own, setOwn] = useState<Mode>(() => readStored(storageKey) ?? defaultMode);
   const mode = controlled ?? own;
@@ -123,12 +127,12 @@ export function ConsoleRoot({ children, mode: controlled, defaultMode = "system"
   const reportStable = useCallback((d: Diagnostic) => report.current(d), []);
   const ctx = useMemo(() => ({ mode, resolvedMode, setMode, logo: normalized.logo, rootRef, report: reportStable }), [mode, resolvedMode, setMode, normalized.logo, reportStable]);
   return (
-    <ConsoleContext.Provider value={ctx}>
+    <FolioContext.Provider value={ctx}>
       <IconSetProvider value={icons ?? {}}>
-        <div ref={rootRef} id={id} data-wds="console" data-mode={resolvedMode} className={className} style={{ ...style, ...vars } as CSSProperties}>
+        <div ref={rootRef} id={id} data-wds="folio" data-mode={resolvedMode} className={className} style={{ ...style, ...vars } as CSSProperties}>
           {children}
         </div>
       </IconSetProvider>
-    </ConsoleContext.Provider>
+    </FolioContext.Provider>
   );
 }

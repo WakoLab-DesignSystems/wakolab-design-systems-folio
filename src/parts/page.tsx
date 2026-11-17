@@ -5,6 +5,8 @@
  * Changes for standalone use: the project controller, i18n keys and routes are replaced by props.
  * Markup and class names are unchanged. The "not visible" branch of ProjectProblem is product
  * policy and stays in the frontend; it can be expressed with MessageBlock.
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+ * src/parts/page.tsx, unchanged.
  */
 import type { ReactNode } from "react";
 import { Button, Skeleton } from "../components";

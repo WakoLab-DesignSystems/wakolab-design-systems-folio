@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "wakolab-design-systems-console/config.schema.json",
-  "title": "Console design-config.json",
+  "$id": "wakolab-design-systems-folio/config.schema.json",
+  "title": "Folio design-config.json",
   "description": "Structure only. Values are applied exactly as written; nothing is derived or judged.",
   "type": "object",
   "additionalProperties": false,
@@ -14,7 +14,7 @@
       "type": "string"
     },
     "system": {
-      "const": "console"
+      "const": "folio"
     },
     "systemVersion": {
       "type": "string"
@@ -104,6 +104,18 @@
             },
             "action-pressed": {
               "type": "string"
+            },
+            "panel": {
+              "type": "string",
+              "description": "Folio-declared role (editorial panel); keeps its own default when omitted."
+            },
+            "on-panel": {
+              "type": "string",
+              "description": "Folio-declared role (editorial panel); keeps its own default when omitted."
+            },
+            "panel-accent": {
+              "type": "string",
+              "description": "Folio-declared role (editorial panel); keeps its own default when omitted."
             }
           }
         },
@@ -188,6 +200,18 @@
             },
             "action-pressed": {
               "type": "string"
+            },
+            "panel": {
+              "type": "string",
+              "description": "Folio-declared role (editorial panel); keeps its own default when omitted."
+            },
+            "on-panel": {
+              "type": "string",
+              "description": "Folio-declared role (editorial panel); keeps its own default when omitted."
+            },
+            "panel-accent": {
+              "type": "string",
+              "description": "Folio-declared role (editorial panel); keeps its own default when omitted."
             }
           }
         }

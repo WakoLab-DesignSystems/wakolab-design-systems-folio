@@ -1,11 +1,15 @@
-/* Console rules of the registration frame (RegistrationFrame).
+/* Folio rules of the editorial registration frame (RegistrationFrame).
  * Copied from WakoLab/wakolab-front at e492bec9ced8893d6940879aa8186ac75a48a272,
  * design-system/compositions.css: the shared frame rules (lines 2–28: .registration-layout,
- * .registration-editorial, .editorial-eyebrow, .registration-workspace, .editorial-art) and the
- * [data-direction="console"] rules (lines 45–54 and, inside the 64rem query, 98–100 and 131–143).
- * Changes for standalone use (review S1 on #5): `[data-direction="console"]` prefixes are dropped
- * (the build scopes every rule to the Console root); the profile-page rules (.home-composition,
- * .home-profile) and the Folio/Marquee rules are not copied. Values are unchanged. */
+ * .registration-editorial, .editorial-eyebrow, .registration-workspace, .editorial-art), the
+ * [data-direction="folio"] rules (lines 63–68 and, inside the 64rem query, 98–100 and 101–117),
+ * following Console's registration.css (wakolab-design-systems-console at
+ * 018fe3214e0a118162d202c2f39f1236f37b1936).
+ * Changes for standalone use (standard KIT_PROPOSAL §8, Folio): `[data-direction="folio"]` prefixes
+ * are dropped (the build scopes every rule to the Folio root); the panel literals become the
+ * Folio-declared roles (--color-panel → var(--wl-panel), --color-on-panel → var(--wl-on-panel),
+ * --color-accent → var(--wl-panel-accent)); the profile-page rules (.home-composition, .home-profile)
+ * and the Console and Marquee rules are not copied. Values are otherwise unchanged. */
 .registration-layout {
   display: grid;
   margin: auto;
@@ -36,44 +40,32 @@
 .editorial-art {
   display: none;
 }
-.registration-layout {
-  border-color: var(--wl-control);
-  border-top: 4px solid var(--wl-action);
-}
 .registration-editorial {
-  border-bottom: 1px solid var(--wl-control);
+  background: var(--wl-panel);
+  color: var(--wl-on-panel);
 }
-.page-heading {
-  border-top: 1px solid var(--wl-control);
-  margin-top: 1rem;
+.editorial-eyebrow {
+  color: var(--wl-panel-accent);
 }
 @media (min-width: 64rem) {
   .registration-workspace {
     padding: 3rem;
   }
-  .registration-page {
-    display: grid;
-    grid-template-columns: minmax(14rem, 1fr) minmax(0, 3fr);
-    gap: 2rem;
-  }
-  .page-heading {
-    align-content: start;
-    display: block;
-    padding: 1.5rem 0;
-  }
-  .page-heading p {
-    margin-top: 1.5rem;
-  }
   .registration-layout {
-    width: 100%;
+    grid-template-columns: 5fr 7fr;
   }
   .registration-editorial {
-    padding: 1.5rem;
+    padding: 3rem;
   }
-  .registration-editorial h2 {
-    font-size: 1.5rem;
+  .editorial-art {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--wl-panel-accent);
+    border-radius: 50%;
+    aspect-ratio: 1;
+    margin: 2rem 0;
   }
-  .registration-workspace {
-    padding: 2rem;
+  .editorial-monogram {
+    font: 700 4rem var(--wl-font-display);
   }
 }

@@ -1,6 +1,7 @@
-/* Console root context. Original code for standalone use (replaces the document-level
+/* Folio root context. Original code for standalone use (replaces the document-level
  * ThemeProvider of WakoLab/wakolab-front web/src/theme/ThemeProvider.tsx at
- * e492bec9ced8893d6940879aa8186ac75a48a272; standard EXTRACTION_MATRIX §4 Provider). */
+ * e492bec9ced8893d6940879aa8186ac75a48a272; standard EXTRACTION_MATRIX §4 Provider).
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936, src/root/context.ts; Console names → Folio names. */
 import { createContext, useContext, type RefObject } from "react";
 import type { Diagnostic } from "./config";
 
@@ -13,7 +14,7 @@ export interface ResolvedLogo {
   alt?: string;
 }
 
-export interface ConsoleContextValue {
+export interface FolioContextValue {
   /** The requested mode (light, dark or system). */
   mode: Mode;
   /** The mode in effect. */
@@ -27,10 +28,10 @@ export interface ConsoleContextValue {
   report: (d: Diagnostic) => void;
 }
 
-export const ConsoleContext = createContext<ConsoleContextValue | null>(null);
+export const FolioContext = createContext<FolioContextValue | null>(null);
 
-export function useConsole(): ConsoleContextValue {
-  const value = useContext(ConsoleContext);
-  if (!value) throw new Error("Console components must be rendered inside <ConsoleRoot>.");
+export function useFolio(): FolioContextValue {
+  const value = useContext(FolioContext);
+  if (!value) throw new Error("Folio components must be rendered inside <FolioRoot>.");
   return value;
 }

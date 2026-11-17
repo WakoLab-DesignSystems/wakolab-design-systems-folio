@@ -1,4 +1,5 @@
 /* Copied from WakoLab/wakolab-front at e492bec9ced8893d6940879aa8186ac75a48a272
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936 (same path), unchanged.
  * Source: web/src/components/ui/tabs.tsx
  * Changes for standalone use: none.
  */

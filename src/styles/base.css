@@ -1,7 +1,8 @@
-/* Console base rules.
+/* Folio base rules.
+ * Copied through wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936 (same file), with Console → Folio in comments.
  * Copied from WakoLab/wakolab-front at e492bec9ced8893d6940879aa8186ac75a48a272, web/src/style.css (the base layer).
- * Changes for standalone use: font package imports are replaced by the Console font aliases
- * (emitted by the build); `*` and `body` are scoped to the Console root by the build. */
+ * Changes for standalone use: font package imports are replaced by the Folio font aliases
+ * (emitted by the build); `*` and `body` are scoped to the Folio root by the build. */
 @layer base {
   * {
     box-sizing: border-box;

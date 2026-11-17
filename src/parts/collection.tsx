@@ -1,9 +1,11 @@
 /* Neutral collection parts.
  * Adapted from WakoLab/wakolab-front at e492bec9ced8893d6940879aa8186ac75a48a272,
- * web/src/features/catalog/parts.tsx: CategoryChips, CategoryTree, Cover, ProjectLink, CatalogStatus,
- * LoadMore (standard EXTRACTION_MATRIX §5.3, N1).
+ * web/src/features/catalog/parts.tsx: CategoryChips, Cover, ProjectLink, CatalogStatus, LoadMore
+ * (standard EXTRACTION_MATRIX §5.3, N1).
  * Changes for standalone use: the catalog view, i18n keys, routes and project contracts are replaced
  * by props (items, selection, labels, handlers). Markup, class names and behaviour are unchanged.
+ * Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+ * src/parts/collection.tsx, without FilterTree (the Console rail; Folio uses chips).
  */
 import type { ReactNode } from "react";
 import { Button, EmptyState, Skeleton, ToggleChip } from "../components";
@@ -34,38 +36,6 @@ export function FilterChips({ items, value, subValue = "", onChange, label, allL
         </div>
       )}
     </div>
-  );
-}
-
-/** Tree presentation for the Console rail (source: CategoryTree). Buttons with aria-pressed;
- *  children shown for the active item. */
-export function FilterTree({ items, value, subValue = "", onChange, label, allLabel, marker = "▸" }: {
-  items: FilterItem[]; value: string; subValue?: string;
-  onChange: (value: string, subValue: string) => void;
-  label: string; allLabel: string; marker?: string;
-}) {
-  return (
-    <nav aria-label={label} className="wl-tree">
-      <ul>
-        <li><button type="button" aria-pressed={!value} onClick={() => onChange("", "")}><span aria-hidden="true" className="wl-marker">{!value ? marker : ""}</span>{allLabel}</button></li>
-        {items.map((f) => (
-          <li key={f.id}>
-            <button type="button" aria-pressed={value === f.id && !subValue} aria-expanded={value === f.id} onClick={() => onChange(f.id, "")}>
-              <span aria-hidden="true" className="wl-marker">{value === f.id ? "▾" : marker}</span>{f.label}
-            </button>
-            {value === f.id && (f.children?.length ?? 0) > 0 && (
-              <ul>
-                {f.children!.map((c) => (
-                  <li key={c.id}><button type="button" aria-pressed={subValue === c.id} onClick={() => onChange(f.id, subValue === c.id ? "" : c.id)}>
-                    {c.label}
-                  </button></li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
-    </nav>
   );
 }
 
