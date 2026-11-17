@@ -1,4 +1,7 @@
-// Isolation of Console roots in a host page (standard EXTRACTION_MATRIX R1–R3, N2, E2 and
+// Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+// tests/isolation.spec.ts; Folio names, fonts, scrims and prefix; the keyboard-layer cases are removed
+// (Folio has no keyboard layer).
+// Isolation of Folio roots in a host page (standard EXTRACTION_MATRIX R1–R3, N2, E2 and
 // INDEPENDENCE_CHECK §4 at 6dc2a7a). Original code; synthetic content only.
 import { test, expect, type Page } from "@playwright/test";
 
@@ -11,7 +14,8 @@ const HOST_CSS = `
   @keyframes wl-shimmer { from { opacity: 0.5 } to { opacity: 0.5 } }
   @property --tw-ring-offset-width { syntax: "<length>"; inherits: true; initial-value: 7px; }
   @property --tw-shadow { syntax: "*"; inherits: true; initial-value: host-shadow; }
-  @font-face { font-family: "JetBrains Mono Variable"; src: url(/design/fonts/example-sans.woff2) format("woff2"); }
+  @font-face { font-family: "DM Sans Variable"; src: url(/design/fonts/test-bold.woff2) format("woff2"); }
+  @font-face { font-family: "Source Serif 4 Variable"; src: url(/design/fonts/example-sans.woff2) format("woff2"); }
   .host-anim { animation: wl-rise 10s linear infinite; transition: color 3s; }
 `;
 
@@ -35,7 +39,7 @@ async function hostSnapshot(page: Page) {
   });
 }
 
-test("host page untouched: html, body and host content compute the same with and without Console", async ({ page }) => {
+test("host page untouched: html, body and host content compute the same with and without Folio", async ({ page }) => {
   await open(page, "?nocss=1");
   await addHostCss(page);
   const without = await hostSnapshot(page);
@@ -58,27 +62,28 @@ for (const order of ["host stylesheet first", "host stylesheet last"]) {
     // Host keeps its keyframes and registered properties.
     expect(await page.locator("#host-anim").evaluate((e) => [getComputedStyle(e).animationName, getComputedStyle(e).opacity])).toEqual(["wl-rise", "0.25"]);
     expect(await page.locator("#host-p").evaluate((e) => [getComputedStyle(e).getPropertyValue("--tw-ring-offset-width"), getComputedStyle(e).getPropertyValue("--tw-shadow").trim()])).toEqual(["7px", "host-shadow"]);
-    // Console uses its prefixed names only.
+    // Folio uses its prefixed names only.
     const sk = await page.locator("#a-skeleton").evaluate((e) => getComputedStyle(e, "::after").animationName);
-    expect(sk).toBe("wds-console-wl-shimmer");
-    const ring = await page.locator("#a-primary").evaluate((e) => [getComputedStyle(e).getPropertyValue("--wds-console-tw-ring-offset-width"), getComputedStyle(e).getPropertyValue("--tw-ring-offset-width")]);
+    expect(sk).toBe("wds-folio-wl-shimmer");
+    const ring = await page.locator("#a-primary").evaluate((e) => [getComputedStyle(e).getPropertyValue("--wds-folio-tw-ring-offset-width"), getComputedStyle(e).getPropertyValue("--tw-ring-offset-width")]);
     expect(ring[0]).toBe("0px");
-    // A host face named like the source's default family does not reach Console.
-    expect(await page.locator("#a-ui").evaluate((e) => getComputedStyle(e).fontFamily)).toMatch(/^"?wds-console-default-jetbrains-mono"?,/);
-    expect(await page.locator("#a-ui").evaluate((e) => getComputedStyle(e).fontFamily)).not.toContain("JetBrains Mono Variable");
+    // A host face named like the source's default family does not reach Folio.
+    expect(await page.locator("#a-ui").evaluate((e) => getComputedStyle(e).fontFamily)).toMatch(/^"?wds-folio-default-dm-sans"?,/);
+    expect(await page.locator("#a-display").evaluate((e) => getComputedStyle(e).fontFamily)).toMatch(/^"?wds-folio-default-source-serif-4"?,/);
+    for (const id of ["#a-ui", "#a-display"]) expect(await page.locator(id).evaluate((e) => getComputedStyle(e).fontFamily)).not.toMatch(/DM Sans Variable|Source Serif 4 Variable/);
   });
 }
 
 test("fonts: same label with different files, multi-file face sets, sharing, replacement and cleanup", async ({ page }) => {
   await open(page);
   const fam = (id: string) => page.locator(`#${id}-ui`).evaluate((e) => getComputedStyle(e).fontFamily.split(",")[0].replace(/"/g, ""));
-  const faces = () => page.evaluate(() => [...document.fonts].filter((f) => f.family.replace(/"/g, "").startsWith("wds-console-font-")).map((f) => `${f.family.replace(/"/g, "")}/${f.weight}`).sort());
+  const faces = () => page.evaluate(() => [...document.fonts].filter((f) => f.family.replace(/"/g, "").startsWith("wds-folio-font-")).map((f) => `${f.family.replace(/"/g, "")}/${f.weight}`).sort());
   // (a) same label, different files → different internal families
   await mount(page, "a", "slot-a", { config: font("/design/fonts/example-sans.woff2?a") });
   await mount(page, "b", "slot-b", { config: font("/design/fonts/example-sans.woff2?b") });
   await page.waitForTimeout(100);
   const [fa, fb] = [await fam("a"), await fam("b")];
-  expect(fa).toMatch(/^wds-console-font-[0-9a-f]{8}$/); expect(fb).toMatch(/^wds-console-font-[0-9a-f]{8}$/);
+  expect(fa).toMatch(/^wds-folio-font-[0-9a-f]{8}$/); expect(fb).toMatch(/^wds-folio-font-[0-9a-f]{8}$/);
   expect(fa).not.toBe(fb);
   // (c) same face set → one family, shared, counted twice
   await update(page, "b", { config: font("/design/fonts/example-sans.woff2?a") });
@@ -102,7 +107,7 @@ test("fonts: same label with different files, multi-file face sets, sharing, rep
   await unmount(page, "a"); await unmount(page, "b");
   expect(await page.evaluate(() => (window as any).harness.faceSets())).toEqual({});
   expect(await faces()).toEqual([]);
-  // (f) host text with the configured label is not served by Console's file
+  // (f) host text with the configured label is not served by Folio's file
   expect(await page.locator("#host-font").evaluate((e) => document.fonts.check(`16px "Example Sans"`) && [...document.fonts].some((f) => f.family.replace(/"/g, "") === "Example Sans"))).toBe(false);
 });
 
@@ -114,7 +119,7 @@ test("two roots: modes independent; overlays keep each root's scrim; theme switc
   const surf = (id: string) => page.locator(`#root-${id}`).evaluate((e) => [e.getAttribute("data-mode"), getComputedStyle(e).backgroundColor]);
   const [la, db] = [await surf("a"), await surf("b")];
   expect(la[0]).toBe("light"); expect(db[0]).toBe("dark"); expect(la[1]).not.toBe(db[1]);
-  for (const [id, scrim] of [["a", "rgba(28, 30, 27, 0.45)"], ["b", "rgba(0, 0, 0, 0.6)"]]) {
+  for (const [id, scrim] of [["a", "rgba(21, 46, 55, 0.45)"], ["b", "rgba(0, 0, 0, 0.6)"]]) {
     await page.click(`#${id}-open-dialog`);
     const dlg = page.locator(`#root-${id} dialog[open]`);
     await expect(dlg).toBeVisible();
@@ -174,26 +179,21 @@ test("popovers: per root, nested Escape closes the innermost only, outside press
   expect(await live(page)).toEqual(baseline);
 });
 
-test("modal dialog: rest of the page inert, Console shortcuts suppressed in every root", async ({ page }) => {
+test("modal dialog: rest of the page inert", async ({ page }) => {
   await open(page);
   await mount(page, "a", "slot-a", { mode: "light" });
   await mount(page, "b", "slot-b", { mode: "dark" });
   await page.click("#a-open-dialog");
   const dlg = page.locator("#root-a dialog[open]");
   expect(await dlg.evaluate((d) => d.matches(":modal"))).toBe(true);
-  for (const key of ["/", "j"]) {
-    await page.keyboard.press(key);
-    expect(await focused(page)).toBe("a-dialog-keep");
-  }
   await page.locator("#host-btn").click({ force: true, trial: false }).catch(() => {});
   expect(await focused(page)).not.toBe("host-btn");
   await page.keyboard.press("Escape");
-  await item(page, "a-one").focus();
-  await page.keyboard.press("j");
-  expect(await focused(page)).toBe("a-two");
+  await expect(dlg).toHaveCount(0);
+  await expect(page.locator("#a-open-dialog")).toBeFocused();
 });
 
-test("reduced motion applies inside Console roots only", async ({ page }) => {
+test("reduced motion applies inside Folio roots only", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await open(page);
   await addHostCss(page);
@@ -205,42 +205,8 @@ test("reduced motion applies inside Console roots only", async ({ page }) => {
   expect(await page.locator("#a-primary").evaluate((e) => getComputedStyle(e).transitionDuration)).toMatch(/^(0s|1e-05s)/);
 });
 
-test("keyboard layer: root scope acts only inside its root; page scope serves one root from the page", async ({ page }) => {
-  await open(page);
-  await mount(page, "a", "slot-a", { mode: "light" });
-  await mount(page, "b", "slot-b", { mode: "dark" });
-  await page.waitForTimeout(50);
-  await item(page, "a-one").focus();
-  await page.keyboard.press("j");
-  expect(await focused(page)).toBe("a-two");
-  await page.keyboard.press("/");
-  expect(await focused(page)).toBe("a-search");
-  await item(page, "b-two").focus();
-  await page.keyboard.press("k");
-  expect(await focused(page)).toBe("b-one");
-  await page.locator("#host-btn").focus();
-  for (const key of ["/", "j"]) { await page.keyboard.press(key); expect(await focused(page)).toBe("host-btn"); }
-  // Page scope on root a: acts from the page body, not from host controls or root b.
-  await open(page, "?pagekeys=a");
-  await mount(page, "a", "slot-a", { mode: "light" });
-  await mount(page, "b", "slot-b", { mode: "dark" });
-  await page.waitForTimeout(50);
-  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
-  await page.keyboard.press("/");
-  expect(await focused(page)).toBe("a-search");
-  await page.locator("#host-btn").focus();
-  await page.keyboard.press("j");
-  expect(await focused(page)).toBe("host-btn");
-  await item(page, "b-one").focus();
-  await page.keyboard.press("j");
-  expect(await focused(page)).toBe("b-two");
-  await page.locator("#host-input").focus();
-  await page.keyboard.press("/");
-  expect(await focused(page)).toBe("host-input");
-});
-
 // Review on #5: popover keyboard behaviour inside an open modal dialog.
-test("popover inside a modal: Escape closes the popover first and keeps the dialog; outside press inside the dialog closes it; shortcuts stay off", async ({ page }) => {
+test("popover inside a modal: Escape closes the popover first and keeps the dialog; outside press inside the dialog closes it", async ({ page }) => {
   await open(page);
   await mount(page, "a", "slot-a", { mode: "light" });
   await mount(page, "b", "slot-b", { mode: "dark" });
@@ -250,7 +216,6 @@ test("popover inside a modal: Escape closes the popover first and keeps the dial
   await page.click("#a-dlg-pop");
   await expect(page.locator("#a-dlg-pop-item")).toBeVisible();
   await page.locator("#a-dlg-pop-item").focus();
-  for (const key of ["/", "j", "k"]) { await page.keyboard.press(key); expect(await focused(page)).toBe("a-dlg-pop-item"); }
   await page.keyboard.press("Escape");
   await expect(page.locator("#a-dlg-pop-item")).toHaveCount(0);
   await expect(dlg).toBeVisible();

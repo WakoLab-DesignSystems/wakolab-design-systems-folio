@@ -1,3 +1,5 @@
+// Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+// tests/helpers.ts; open() targets Folio's demo (state in the URL hash).
 import { expect, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -12,8 +14,9 @@ export async function axe(page: Page, include?: string) {
   }, include);
 }
 export const noOverflow = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
-export async function open(page: Page, query: string) {
-  await page.goto(`/neutral/?${query}`);
-  await expect(page.locator('[data-wds="console"]')).toBeVisible();
+export async function open(page: Page, hash: string) {
+  // A fresh load for every call (the demo keeps its state in the hash).
+  await page.goto(`/demo/?r=${Math.random().toString(36).slice(2)}#${hash}`);
+  await expect(page.locator('[data-wds="folio"]')).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
 }

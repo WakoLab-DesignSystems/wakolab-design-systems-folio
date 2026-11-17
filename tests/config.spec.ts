@@ -1,11 +1,14 @@
-// Explicit configuration (standard CONFIGURATION.md and INDEPENDENCE_CHECK §3 at 6dc2a7a).
+// Explicit configuration (standard CONFIGURATION.md and INDEPENDENCE_CHECK §3; CONFIGURATION §2.1 at c2ca848).
+// Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+// tests/config.spec.ts; expected values are Folio's (defaults, example configuration, font stacks), and the
+// Folio-declared panel roles are tested below.
 // Values are applied as written; omitted keys keep defaults; nothing is judged.
 import { test, expect, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
-const example = JSON.parse(readFileSync("examples/public/design/design-config.json", "utf8"));
+const example = JSON.parse(readFileSync("examples/config/design-config.json", "utf8"));
 const defaults = JSON.parse(readFileSync("config.default.json", "utf8"));
-const base = { system: "console", systemVersion: "0.1.0" };
+const base = { system: "folio", systemVersion: "0.1.0" };
 
 async function harness(page: Page, query = "") {
   const requests: string[] = [];
@@ -26,7 +29,7 @@ test("example file: values exactly as written in each mode; omitted roles keep d
   for (const [role, value] of Object.entries(example.colors.light)) expect(await v(page, "a", `--wl-${role}`), `light ${role}`).toBe(value);
   for (const role of ["surface", "ink", "on-action", "danger", "accent", "scrim"]) expect(await v(page, "a", `--wl-${role}`), `light ${role} default`).toBe(defaults.colors.light[role].replace(/rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/, "rgb($1 $2 $3 / $4)"));
   expect(await v(page, "a", "--wl-action-pressed")).toBe(example.colors.light["action-hover"]);
-  expect(await page.locator("#a-primary").evaluate((b) => getComputedStyle(b).backgroundColor)).toBe("rgb(14, 124, 102)");
+  expect(await page.locator("#a-primary").evaluate((b) => getComputedStyle(b).backgroundColor)).toBe("rgb(138, 59, 18)");
   await update(page, "a", { config: example, assetBase: "/design/", mode: "dark" });
   await settle(page);
   for (const [role, value] of Object.entries(example.colors.dark)) expect(await v(page, "a", `--wl-${role}`), `dark ${role}`).toBe(value);
@@ -75,16 +78,18 @@ test("fonts and logos from the consumer's files; removal restores defaults; text
   await harness(page);
   await mount(page, "a", "slot-a", { mode: "light" });
   await settle(page);
-  await expect(page.locator("#root-a .wl-brand")).toHaveText("›Root a");
-  const defaultFont = await page.locator("#a-ui").evaluate((e) => getComputedStyle(e).fontFamily);
-  expect(defaultFont).toContain("wds-console-default-jetbrains-mono");
+  await expect(page.locator("#root-a .wl-brand")).toHaveText("Root a");
+  // The example configures the display role (Folio's serif headings) with its own file.
+  const defaultFont = await page.locator("#a-display").evaluate((e) => getComputedStyle(e).fontFamily);
+  expect(defaultFont).toContain("wds-folio-default-source-serif-4");
   await update(page, "a", { mode: "light", config: example, assetBase: "/design/" });
-  await page.waitForFunction(() => [...document.fonts].some((f) => f.family.startsWith("wds-console-font-") && f.status === "loaded") || document.fonts.ready);
+  await page.waitForFunction(() => [...document.fonts].some((f) => f.family.startsWith("wds-folio-font-") && f.status === "loaded") || document.fonts.ready);
   await page.evaluate(() => document.fonts.ready);
-  const fam = await page.locator("#a-ui").evaluate((e) => getComputedStyle(e).fontFamily);
-  expect(fam).toMatch(/^"?wds-console-font-[0-9a-f]{8}"?, ui-monospace/);
+  const fam = await page.locator("#a-display").evaluate((e) => getComputedStyle(e).fontFamily);
+  expect(fam).toMatch(/^"?wds-folio-font-[0-9a-f]{8}"?, "Noto Serif", Georgia/);
+  expect(await page.locator("#a-ui").evaluate((e) => getComputedStyle(e).fontFamily)).toMatch(/^"?wds-folio-default-dm-sans"?,/);
   expect(fam).not.toContain("Example Sans");
-  expect(await page.evaluate(() => [...document.fonts].filter((f) => f.family.startsWith("wds-console-font-")).map((f) => f.status))).toContain("loaded");
+  expect(await page.evaluate(() => [...document.fonts].filter((f) => f.family.startsWith("wds-folio-font-")).map((f) => f.status))).toContain("loaded");
   const mark = page.locator("#root-a .wl-logo-mark"), word = page.locator("#root-a .wl-logo-wordmark");
   await expect(mark).toHaveAttribute("src", /\/design\/logo\/mark\.svg$/);
   await expect(word).toHaveAttribute("src", /wordmark-light\.svg$/);
@@ -98,14 +103,14 @@ test("fonts and logos from the consumer's files; removal restores defaults; text
   await expect(page.locator("#root-a .wl-brand")).toHaveAttribute("aria-label", "Root a");
   await update(page, "a", { mode: "light" });
   await settle(page);
-  await expect(page.locator("#root-a .wl-brand")).toHaveText("›Root a");
-  expect(await page.locator("#a-ui").evaluate((e) => getComputedStyle(e).fontFamily)).toBe(defaultFont);
+  await expect(page.locator("#root-a .wl-brand")).toHaveText("Root a");
+  expect(await page.locator("#a-display").evaluate((e) => getComputedStyle(e).fontFamily)).toBe(defaultFont);
   expect(await page.evaluate(() => (window as any).harness.faceSets())).toEqual({});
 });
 
 test("structural diagnostics only: wrong types, unknown keys and roles, unresolved and missing assets; defaults kept", async ({ page }) => {
   await harness(page);
-  const bad = { system: "folio", extra: 1, colors: { light: { action: 12, nope: "#000", link: "not a colour at all" }, sepia: {} },
+  const bad = { system: "marquee", extra: 1, colors: { light: { action: 12, nope: "#000", link: "not a colour at all" }, sepia: {} },
     fonts: { ui: { family: "X", files: [{ src: "fonts/missing.woff2" }] }, display: { files: [] } }, logo: { mark: "logo/mark.svg", alt: 3 } };
   await mount(page, "a", "slot-a", { mode: "light", config: bad }); // no assetBase
   await settle(page);
@@ -122,7 +127,7 @@ test("no request other than the page's own assets", async ({ page }) => {
   const requests = await harness(page);
   await mount(page, "a", "slot-a", { mode: "light", config: example, assetBase: "/design/" });
   await page.waitForTimeout(500);
-  const foreign = requests.filter((u) => !u.startsWith("http://127.0.0.1:5190/"));
+  const foreign = requests.filter((u) => !u.startsWith("http://127.0.0.1:5191/"));
   expect(foreign).toEqual([]);
   expect(requests.some((u) => /\/api\//.test(u))).toBe(false);
 });
@@ -134,14 +139,14 @@ test("fonts: ui alone leaves display and code at their defaults; each role is se
   await mount(page, "a", "slot-a", { mode: "light" });
   await page.waitForTimeout(50);
   const initial = { ui: await fam("a", "ui"), display: await fam("a", "display"), code: await fam("a", "code"), prose: await fam("a", "prose") };
-  expect(initial.display).toMatch(/^"?wds-console-default-jetbrains-mono"?,/);
-  expect(initial.code).toMatch(/^"?wds-console-default-jetbrains-mono"?,/);
+  expect(initial.display).toMatch(/^"?wds-folio-default-source-serif-4"?,/);
+  expect(initial.code).toMatch(/^"?wds-folio-default-dm-sans"?,/);
   const file = (q: string) => ({ family: "Example Sans", files: [{ src: `fonts/example-sans.woff2?${q}` }] });
   const set = (fonts: object) => update(page, "a", { mode: "light", assetBase: "/design/", config: { ...base, fonts } });
   // ui only
   await set({ ui: file("ui") });
   await page.waitForTimeout(100);
-  expect(await fam("a", "ui")).toMatch(/^"?wds-console-font-/);
+  expect(await fam("a", "ui")).toMatch(/^"?wds-folio-font-/);
   expect(await fam("a", "display")).toBe(initial.display);
   expect(await fam("a", "code")).toBe(initial.code);
   expect(await fam("a", "prose")).toBe(initial.prose);
@@ -149,7 +154,7 @@ test("fonts: ui alone leaves display and code at their defaults; each role is se
   await set({ ui: file("ui"), display: file("display"), code: file("code") });
   await page.waitForTimeout(100);
   const [u, d, c] = [await fam("a", "ui"), await fam("a", "display"), await fam("a", "code")];
-  for (const f of [u, d, c]) expect(f).toMatch(/^"?wds-console-font-/);
+  for (const f of [u, d, c]) expect(f).toMatch(/^"?wds-folio-font-/);
   expect(new Set([u, d, c]).size).toBe(3);
   await set({ ui: file("ui"), code: file("code") });
   await page.waitForTimeout(100);
@@ -185,13 +190,13 @@ test("asset failure: missing font and logo files fall back to defaults, are repo
   await mount(page, "b", "slot-b", { mode: "light", config: example, assetBase: "/design/" });
   await update(page, "a", { mode: "light", config: missing, assetBase: "/design/" });
   await page.waitForFunction(() => (window as any).harness.diagnostics.some((d: any) => d.key === "fonts.ui.files[0].src"));
-  await expect(page.locator("#root-a .wl-brand")).toHaveText("›Root a");
+  await expect(page.locator("#root-a .wl-brand")).toHaveText("Root a");
   expect(await keys()).toEqual(expect.arrayContaining(["a:fonts.ui.files[0].src", "a:logo.mark", "a:logo.wordmark.light"]));
   expect(await fam("a")).toBe(defaults.ui); // failed ui role: default restored
-  expect(await fam("a", "display")).toMatch(/^"?wds-console-font-/); // the valid display file is unaffected
+  expect(await fam("a", "display")).toMatch(/^"?wds-folio-font-/); // the valid display file is unaffected
   await expect(page.locator("#root-a .wl-brand")).toHaveAttribute("aria-label", "Broken logo");
-  // Other root and host font untouched.
-  expect(await fam("b")).toMatch(/^"?wds-console-font-/);
+  // Other root (example configuration: display file) and host font untouched.
+  expect(await fam("b", "display")).toMatch(/^"?wds-folio-font-/);
   expect(await page.locator("#root-b .wl-logo-mark").evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
   expect(await keys()).not.toEqual(expect.arrayContaining([expect.stringMatching(/^b:/)]));
   expect(await page.evaluate(() => [...document.fonts].includes((window as any).__hostFace) && (window as any).__hostFace.status)).toBe("loaded");
@@ -203,16 +208,16 @@ test("asset failure: missing font and logo files fall back to defaults, are repo
   await update(page, "a", { mode: "light", config: example, assetBase: "/design/" });
   await expect(page.locator("#root-a .wl-logo-mark")).toHaveAttribute("src", /\/logo\/mark\.svg$/);
   await expect.poll(() => page.locator("#root-a .wl-logo-wordmark").evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
-  expect(await fam("a")).toMatch(/^"?wds-console-font-/);
-  expect(await fam("a")).toBe(await fam("b")); // same face set as root b, shared
+  expect(await fam("a", "display")).toMatch(/^"?wds-folio-font-/);
+  expect(await fam("a", "display")).toBe(await fam("b", "display")); // same face set as root b, shared
   // Replacement by a failing file again, then removal: defaults each time.
   await update(page, "a", { mode: "light", config: { ...base, fonts: { ui: { family: "X", files: [{ src: "fonts/missing-again.woff2" }] } } }, assetBase: "/design/" });
   await expect.poll(() => fam("a")).toBe(defaults.ui);
-  await expect(page.locator("#root-a .wl-brand")).toHaveText("›Root a");
+  await expect(page.locator("#root-a .wl-brand")).toHaveText("Root a");
   await update(page, "a", { mode: "light" });
   await page.waitForTimeout(50);
   expect({ ui: await fam("a"), display: await fam("a", "display") }).toEqual(defaults);
-  expect(await fam("b")).toMatch(/^"?wds-console-font-/);
+  expect(await fam("b", "display")).toMatch(/^"?wds-folio-font-/);
   expect(await page.evaluate(() => (window as any).__hostFace.status)).toBe("loaded");
 });
 
@@ -241,7 +246,7 @@ test("fonts: distinct regular, bold, italic and subset files are selected by des
     { src: "fonts/test-cyrillic.woff2", weight: "400", style: "normal", unicodeRange: "U+0400-045F" },
   ] } } } });
   await page.waitForTimeout(100);
-  const faces = () => page.evaluate(() => Object.fromEntries([...document.fonts].filter((f) => f.family.replace(/"/g, "").startsWith("wds-console-font-")).map((f) => [`${f.weight}/${f.style}/${f.unicodeRange}`, f.status])));
+  const faces = () => page.evaluate(() => Object.fromEntries([...document.fonts].filter((f) => f.family.replace(/"/g, "").startsWith("wds-folio-font-")).map((f) => [`${f.weight}/${f.style}/${f.unicodeRange}`, f.status])));
   // Reference faces of the same files under page-level names (the test page is the host here).
   await page.evaluate(async () => {
     const add = async (family: string, file: string, d: FontFaceDescriptors = {}) => { const f = new FontFace(family, `url(/design/fonts/${file})`, d); document.fonts.add(f); await f.load(); };
@@ -269,4 +274,54 @@ test("fonts: distinct regular, bold, italic and subset files are selected by des
   // The faces really differ, so equal widths identify the file.
   const widths = [await measure(latin, "RefRegular"), await measure(latin, "RefBold", "700"), await measure(latin, "RefItalic", "400", "italic")];
   expect(new Set(widths.map((w) => w.toFixed(1))).size).toBe(3);
+});
+
+// Folio-declared panel roles (CONFIGURATION §2.1; KIT_PROPOSAL §8): applied exactly as written per mode;
+// an omitted panel role keeps its own default and never follows accent, focus, action or another role.
+test("panel roles: defaults, exact application per mode, independence from other roles, removal", async ({ page }) => {
+  await harness(page);
+  const panel = () => page.locator("#a-panel").evaluate((e) => [getComputedStyle(e).backgroundColor, getComputedStyle(e).color, getComputedStyle(e.querySelector(".editorial-eyebrow")!).color]);
+  const DEF = ["rgb(21, 46, 55)", "rgb(237, 246, 238)", "rgb(206, 241, 197)"];
+  await mount(page, "a", "slot-a", { mode: "light" });
+  await settle(page);
+  expect(await panel()).toEqual(DEF);
+  for (const mode of ["light", "dark"]) expect(defaults.colors[mode]).toMatchObject({ panel: "#152e37", "on-panel": "#edf6ee", "panel-accent": "#cef1c5" });
+  // Other roles configured, panel roles omitted: unchanged.
+  await update(page, "a", { mode: "light", config: { ...base, colors: { light: { accent: "#ff0000", focus: "#00ff00", action: "#0000ff", ink: "#111111", "surface-2": "#222222" } } } });
+  await settle(page);
+  expect(await panel()).toEqual(DEF);
+  // One panel role set: only it changes, as written (any CSS colour syntax).
+  await update(page, "a", { mode: "light", config: { ...base, colors: { light: { panel: "rgb(10 20 30)" } } } });
+  await settle(page);
+  expect(await v(page, "a", "--wl-panel")).toBe("rgb(10 20 30)");
+  expect(await panel()).toEqual(["rgb(10, 20, 30)", DEF[1], DEF[2]]);
+  // All three, light only: dark keeps the defaults.
+  const cfg = { ...base, colors: { light: { panel: "#101010", "on-panel": "#fafafa", "panel-accent": "#ffcc00" } } };
+  await update(page, "a", { mode: "light", config: cfg });
+  await settle(page);
+  expect(await panel()).toEqual(["rgb(16, 16, 16)", "rgb(250, 250, 250)", "rgb(255, 204, 0)"]);
+  await page.locator("#a-panel-link").focus();
+  await update(page, "a", { mode: "dark", config: cfg });
+  await settle(page);
+  expect(await panel()).toEqual(DEF);
+  // Removal restores the defaults; no diagnostic for declared roles.
+  await update(page, "a", { mode: "light" });
+  await settle(page);
+  expect(await panel()).toEqual(DEF);
+  expect(await page.evaluate(() => (window as any).harness.diagnostics.filter((d: any) => /panel/.test(d.key)))).toEqual([]);
+  // The example configuration sets panel and panel-accent in light and panel in dark.
+  await update(page, "a", { mode: "light", config: example, assetBase: "/design/" });
+  await settle(page);
+  expect(await panel()).toEqual(["rgb(44, 29, 20)", DEF[1], "rgb(244, 199, 161)"]);
+  await update(page, "a", { mode: "dark", config: example, assetBase: "/design/" });
+  await settle(page);
+  expect(await panel()).toEqual(["rgb(58, 36, 22)", DEF[1], DEF[2]]);
+});
+
+test("panel roles are not common roles: a Console-targeted file reports system, and an unknown role is reported", async ({ page }) => {
+  await harness(page);
+  await mount(page, "a", "slot-a", { mode: "light", config: { system: "console", systemVersion: "0.1.0", colors: { light: { "panel-ink": "#000000" } } } });
+  await settle(page);
+  const keys = await page.evaluate(() => (window as any).harness.diagnostics.map((d: any) => d.key));
+  expect(keys).toEqual(expect.arrayContaining(["system", "colors.light.panel-ink"]));
 });
