@@ -1,0 +1,106 @@
+{
+ "case": "unavailable-light-1024",
+ "exact": 5,
+ "maxChannelDelta": 1,
+ "clusters": [
+  {
+   "box": [
+    328,
+    303,
+    330,
+    304
+   ],
+   "count": 5,
+   "maxDelta": 1
+  }
+ ],
+ "crops": [
+  {
+   "file": "docs/parity/run-1/evidence/unavailable-light-1024-cluster1.png",
+   "region": [
+    322,
+    297,
+    337,
+    311
+   ],
+   "maskedIconAreas": []
+  }
+ ],
+ "pixels": [
+  {
+   "x": 328,
+   "y": 303,
+   "delta": 1,
+   "baseline": [
+    130,
+    146,
+    139
+   ],
+   "candidate": [
+    129,
+    145,
+    138
+   ]
+  },
+  {
+   "x": 329,
+   "y": 303,
+   "delta": 1,
+   "baseline": [
+    155,
+    168,
+    161
+   ],
+   "candidate": [
+    155,
+    167,
+    161
+   ]
+  },
+  {
+   "x": 330,
+   "y": 303,
+   "delta": 1,
+   "baseline": [
+    181,
+    191,
+    185
+   ],
+   "candidate": [
+    182,
+    190,
+    185
+   ]
+  },
+  {
+   "x": 328,
+   "y": 304,
+   "delta": 1,
+   "baseline": [
+    242,
+    244,
+    243
+   ],
+   "candidate": [
+    242,
+    243,
+    243
+   ]
+  },
+  {
+   "x": 329,
+   "y": 304,
+   "delta": 1,
+   "baseline": [
+    215,
+    221,
+    218
+   ],
+   "candidate": [
+    215,
+    220,
+    218
+   ]
+  }
+ ]
+}

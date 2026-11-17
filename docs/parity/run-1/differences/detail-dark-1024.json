@@ -1,0 +1,261 @@
+{
+ "case": "detail-dark-1024",
+ "exact": 14,
+ "maxChannelDelta": 1,
+ "clusters": [
+  {
+   "box": [
+    990,
+    676,
+    991,
+    680
+   ],
+   "count": 9,
+   "maxDelta": 1
+  },
+  {
+   "box": [
+    990,
+    813,
+    991,
+    816
+   ],
+   "count": 5,
+   "maxDelta": 1
+  }
+ ],
+ "crops": [
+  {
+   "file": "docs/parity/run-1/evidence/detail-dark-1024-cluster1.png",
+   "region": [
+    984,
+    670,
+    998,
+    687
+   ],
+   "maskedIconAreas": []
+  },
+  {
+   "file": "docs/parity/run-1/evidence/detail-dark-1024-cluster2.png",
+   "region": [
+    984,
+    807,
+    998,
+    823
+   ],
+   "maskedIconAreas": []
+  }
+ ],
+ "pixels": [
+  {
+   "x": 990,
+   "y": 676,
+   "delta": 1,
+   "baseline": [
+    34,
+    52,
+    57
+   ],
+   "candidate": [
+    33,
+    51,
+    58
+   ]
+  },
+  {
+   "x": 991,
+   "y": 676,
+   "delta": 1,
+   "baseline": [
+    17,
+    29,
+    33
+   ],
+   "candidate": [
+    16,
+    28,
+    33
+   ]
+  },
+  {
+   "x": 990,
+   "y": 677,
+   "delta": 1,
+   "baseline": [
+    35,
+    52,
+    59
+   ],
+   "candidate": [
+    34,
+    52,
+    59
+   ]
+  },
+  {
+   "x": 991,
+   "y": 677,
+   "delta": 1,
+   "baseline": [
+    23,
+    37,
+    41
+   ],
+   "candidate": [
+    23,
+    37,
+    42
+   ]
+  },
+  {
+   "x": 990,
+   "y": 678,
+   "delta": 1,
+   "baseline": [
+    32,
+    48,
+    54
+   ],
+   "candidate": [
+    31,
+    47,
+    54
+   ]
+  },
+  {
+   "x": 991,
+   "y": 678,
+   "delta": 1,
+   "baseline": [
+    30,
+    46,
+    51
+   ],
+   "candidate": [
+    29,
+    45,
+    51
+   ]
+  },
+  {
+   "x": 990,
+   "y": 679,
+   "delta": 1,
+   "baseline": [
+    27,
+    43,
+    49
+   ],
+   "candidate": [
+    27,
+    42,
+    49
+   ]
+  },
+  {
+   "x": 991,
+   "y": 679,
+   "delta": 1,
+   "baseline": [
+    35,
+    52,
+    58
+   ],
+   "candidate": [
+    34,
+    52,
+    58
+   ]
+  },
+  {
+   "x": 991,
+   "y": 680,
+   "delta": 1,
+   "baseline": [
+    39,
+    58,
+    65
+   ],
+   "candidate": [
+    38,
+    58,
+    64
+   ]
+  },
+  {
+   "x": 991,
+   "y": 813,
+   "delta": 1,
+   "baseline": [
+    39,
+    58,
+    65
+   ],
+   "candidate": [
+    38,
+    58,
+    64
+   ]
+  },
+  {
+   "x": 990,
+   "y": 814,
+   "delta": 1,
+   "baseline": [
+    27,
+    43,
+    49
+   ],
+   "candidate": [
+    27,
+    42,
+    49
+   ]
+  },
+  {
+   "x": 990,
+   "y": 815,
+   "delta": 1,
+   "baseline": [
+    32,
+    48,
+    54
+   ],
+   "candidate": [
+    31,
+    47,
+    54
+   ]
+  },
+  {
+   "x": 991,
+   "y": 815,
+   "delta": 1,
+   "baseline": [
+    29,
+    45,
+    50
+   ],
+   "candidate": [
+    28,
+    44,
+    50
+   ]
+  },
+  {
+   "x": 990,
+   "y": 816,
+   "delta": 1,
+   "baseline": [
+    35,
+    53,
+    59
+   ],
+   "candidate": [
+    34,
+    52,
+    59
+   ]
+  }
+ ]
+}
