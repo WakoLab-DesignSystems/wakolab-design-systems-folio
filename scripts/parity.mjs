@@ -1,6 +1,8 @@
-// Visual parity check (standard EXTRACTION_MATRIX §8 at 6dc2a7a; review R4 on #5). Original code.
+// Visual parity check (standard EXTRACTION_MATRIX §8; KIT_PROPOSAL §8, Folio). Original code, copied from
+// WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936, scripts/parity.mjs.
+// Changes for Folio: Folio direction in the baselines, Folio candidate URLs (port 5191) and icon hook.
 //
-// Compares Console screens of the WakoLab frontend at e492bec9ced8893d6940879aa8186ac75a48a272
+// Compares Folio screens of the WakoLab frontend at e492bec9ced8893d6940879aa8186ac75a48a272
 // (the baseline) with the same synthetic screens rendered by this package (the candidate), at 360,
 // 768, 1024 and 1440 px, light and dark, in the same browser and fonts. Two baseline sources:
 //
@@ -11,9 +13,9 @@
 //  - fixture screens (form, components, confirm, registration, overlays): one fixture
 //    (examples/parity/fixture) rendered twice, with the frontend's own modules (baseline, built by
 //    examples/parity/front-baseline/vite.config.mjs from the checkout and served on :5175) and with
-//    the built package (candidate, examples/parity/fixture/console-sys.tsx).
+//    the built package (candidate, examples/parity/fixture/folio-sys.tsx).
 //
-//   npm run build && npx vite --config examples/vite.config.ts &      # candidates on :5190
+//   npm run build && npx vite --config examples/vite.config.ts &      # candidates on :5191
 //   node scripts/parity.mjs --icons <checkout>/web/src/components/ui/icons.tsx [--control]
 //
 // --icons reads the frontend's icon path data at run time and injects it into the candidate pages
@@ -39,9 +41,9 @@ import { join } from "node:path";
 
 const arg = (name, fallback) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : fallback; };
 const BASELINE = arg("--baseline", "http://127.0.0.1:5174/prototype/index.html");
-const CANDIDATE = arg("--candidate", "http://127.0.0.1:5190/parity/index.html");
+const CANDIDATE = arg("--candidate", "http://127.0.0.1:5191/parity/index.html");
 const FIXTURE_BASELINE = arg("--fixture-baseline", "http://127.0.0.1:5175/index.html");
-const FIXTURE_CANDIDATE = arg("--fixture-candidate", "http://127.0.0.1:5190/parity/fixture/index.html");
+const FIXTURE_CANDIDATE = arg("--fixture-candidate", "http://127.0.0.1:5191/parity/fixture/index.html");
 const OUT = arg("--out", "parity-output");
 const ICONS = arg("--icons", null);
 const CONTROL = process.argv.includes("--control");
@@ -85,7 +87,7 @@ function urls(screen, spec, mode) {
   if (spec.fixture) return { baseline: `${FIXTURE_BASELINE}?screen=${screen}&mode=${mode}`, candidate: `${FIXTURE_CANDIDATE}?screen=${screen}&mode=${mode}`, baselineInit: null };
   return {
     baseline: `${BASELINE}?frame=1&lang=en${spec.baseline}`, candidate: `${CANDIDATE}?screen=${screen}&mode=${mode}`,
-    baselineInit: { fn: (m) => { localStorage.setItem("wakolab_prototype_appearance_v1", JSON.stringify({ theme: "console", mode: m })); localStorage.setItem("wakolab_locale", "en"); }, arg: mode },
+    baselineInit: { fn: (m) => { localStorage.setItem("wakolab_prototype_appearance_v1", JSON.stringify({ theme: "folio", mode: m })); localStorage.setItem("wakolab_locale", "en"); }, arg: mode },
   };
 }
 async function capture(browser, { url, mode, width, init, after }) {
@@ -171,7 +173,7 @@ for (const [screen, spec] of Object.entries(SCREENS)) {
     const name = `${screen}-${mode}-${width}`;
     const dir = join(OUT, name); mkdirSync(dir, { recursive: true });
     const u = urls(screen, spec, mode);
-    const candInit = icons ? { fn: (set) => { window.__CONSOLE_ICONS__ = set; }, arg: icons } : null;
+    const candInit = icons ? { fn: (set) => { window.__FOLIO_ICONS__ = set; }, arg: icons } : null;
     const after = spec.openDialog ? () => { const d = document.querySelector("dialog.wl-dialog"); d.showModal(); d.querySelector("[data-autofocus]")?.focus(); } : spec.after ?? null;
     const base = await capture(browserA, { url: u.baseline, mode, width, init: u.baselineInit, after });
     // spec.after (an interaction such as opening a popover) applies to both sides; the prototype

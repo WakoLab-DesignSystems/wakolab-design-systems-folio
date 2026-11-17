@@ -24,6 +24,21 @@ This repository is the **Folio** design system. It must stay **autonomous**: eve
 - Documentation, code comments and issues are in English.
 - No secrets, personal data or private conversation content in commits or logs.
 
+## Using Folio in another project (agents)
+
+1. Add the package from a clone or a pinned Git commit (see [README.md](README.md#independent-use)); do not copy files out of `src/`.
+2. Import `wakolab-design-systems-folio/folio.css` once and render every Folio screen inside `FolioRoot`. Do not style `html` or `body` for Folio, and do not target Folio's internal classes from the host.
+3. Put the consumer's choices in a `design-config.json` (explicit colours per mode, including the Folio panel roles `panel`, `on-panel`, `panel-accent` if wanted, and the consumer's own font and logo files) and pass it as `config`, with `assetBase` for relative paths. Do not compute colours from other colours and do not "fix" values the consumer chose.
+4. Supply icon paths through `FolioRoot icons` from a source whose licence the consumer has confirmed. Folio ships none.
+5. Product logic (data loading, routes, authentication, i18n) stays in the consuming app; pass texts and data as props and slots.
+6. Start from the demo (`examples/demo`), the design rules (`docs/rules/`) and `design-system.json`.
+
+## Working on the extracted code
+
+- Files copied or adapted from the WakoLab frontend or from Console start with their sources (repository, path, commit) and changes; keep these headers accurate and update [docs/PROVENANCE.md](docs/PROVENANCE.md) when you change the mapping.
+- Run `npm run build`, `npm run check` and `npm test` before proposing a change; run `npm run consumer` when packaging, dependencies or exports change, and `npm run parity` (with the frontend baselines) when visible output changes. No pixel tolerance is granted.
+- Do not add icon artwork until its provenance and licence are settled in an issue.
+
 Follow the integration and promotion gates in [CONTRIBUTING.md](CONTRIBUTING.md#integration-and-promotion). Orc authorizes the reviewed HEAD and Rel executes the merge; integration does not grant staging, release or production approval.
 
 ## Coordination
