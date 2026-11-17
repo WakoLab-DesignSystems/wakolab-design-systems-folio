@@ -1,0 +1,33 @@
+{
+  "$schema": "../../config.schema.json",
+  "system": "folio",
+  "systemVersion": "0.1.0",
+  "colors": {
+    "light": {
+      "action": "#8a3b12",
+      "action-hover": "#6f2f0e",
+      "link": "#8a3b12",
+      "focus": "#8a3b12",
+      "panel": "#2c1d14",
+      "panel-accent": "#f4c7a1"
+    },
+    "dark": {
+      "action": "#f0a774",
+      "action-hover": "#f6c39e",
+      "on-action": "#2a1306",
+      "link": "#f0a774",
+      "panel": "#3a2416"
+    }
+  },
+  "fonts": {
+    "display": {
+      "family": "Example Sans",
+      "files": [{ "src": "fonts/example-sans.woff2", "weight": "100 1000", "style": "normal" }]
+    }
+  },
+  "logo": {
+    "mark": "logo/mark.svg",
+    "wordmark": { "light": "logo/wordmark-light.svg", "dark": "logo/wordmark-dark.svg" },
+    "alt": "Example App home"
+  }
+}

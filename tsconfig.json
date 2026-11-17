@@ -18,7 +18,7 @@
     "types": [],
     "paths": {
       "parity-sys": [
-        "./examples/parity/fixture/console-sys.tsx"
+        "./examples/parity/fixture/folio-sys.tsx"
       ]
     }
   },

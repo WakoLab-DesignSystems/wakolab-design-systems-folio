@@ -1,30 +1,30 @@
-// Test harness: mounts Console roots on demand so that tests can check configuration and
+// Test harness: mounts Folio roots on demand so that tests can check configuration and
 // isolation (standard INDEPENDENCE_CHECK §3–§4). Original code; synthetic content only.
-// ?nocss=1 skips the Console stylesheet (used to compare host styles with and without it).
-// ?pagekeys=<id> binds the keyboard layer of root <id> with scope "page" (the others use "root").
+// Copied from WakoLab-DesignSystems/wakolab-design-systems-console at 018fe3214e0a118162d202c2f39f1236f37b1936,
+// examples/harness/main.tsx. Changes for Folio: Folio names; no keyboard layer (Folio has none);
+// an editorial panel (declared panel roles) with a focusable element inside it.
+// ?nocss=1 skips the Folio stylesheet (used to compare host styles with and without it).
 import { createRoot, type Root } from "react-dom/client";
 import { useRef, useState } from "react";
 import {
-  Button, CollectionKeys, ConsoleRoot, Dialog, ItemLink, LogoSlot, Popover, registeredFaceSets, SearchField,
-  type ConsoleRootProps, type Diagnostic,
-} from "wakolab-design-systems-console";
+  Button, Dialog, EditorialPanel, FolioRoot, ItemLink, LogoSlot, Popover, registeredFaceSets, SearchField,
+  type FolioRootProps, type Diagnostic,
+} from "wakolab-design-systems-folio";
 
 const params = new URLSearchParams(location.search);
-const pageKeys = params.get("pagekeys");
-const ready = params.get("nocss") ? Promise.resolve() : import("wakolab-design-systems-console/console.css");
+const ready = params.get("nocss") ? Promise.resolve() : import("wakolab-design-systems-folio/folio.css");
 
 function Content({ id }: { id: string }) {
   const search = useRef<HTMLInputElement>(null);
-  const list = useRef<HTMLUListElement>(null);
   return (
-    <div className="wl-home wl-console">
+    <div className="wl-home wl-folio">
       <header className="wl-topbar"><LogoSlot label={`Root ${id}`} /></header>
       <main className="wl-page" id={`${id}-main`}>
         <p className="wl-lead" id={`${id}-lead`}>Synthetic content of root {id}.</p>
         <span id={`${id}-ui`} style={{ fontFamily: "var(--wl-font-ui)" }}>ui text Wg</span>
         <span id={`${id}-prose`} style={{ fontFamily: "var(--wl-font-prose)" }}>prose text Wg</span>
         <h1 id={`${id}-display`} style={{ fontFamily: "var(--wl-font-display)" }}>display text Wg</h1>
-        <kbd id={`${id}-code`} className="wl-kbd">/</kbd>
+        <code id={`${id}-code`} style={{ fontFamily: "var(--wl-font-code)" }}>code text Wg</code>
         <Button id={`${id}-primary`}>Primary</Button>
         <Button id={`${id}-ghost`} variant="ghost">Ghost</Button>
         <a href="#x" id={`${id}-link`} className="wl-back">Link</a>
@@ -41,8 +41,11 @@ function Content({ id }: { id: string }) {
         </Popover>
         <DialogDemo id={id} />
         <SearchField id={`${id}-search`} inputRef={search} label="Search" value="" onChange={() => {}} clearLabel="Clear" />
-        <CollectionKeys searchRef={search} itemsRef={list} scope={pageKeys === id ? "page" : "root"} />
-        <ul ref={list}>{["one", "two", "three"].map((x) => <li key={x}><ItemLink href={`#${x}`} itemId={`${id}-${x}`} className="wl-row">{x}</ItemLink></li>)}</ul>
+        <aside data-surface="dark" className="registration-editorial" id={`${id}-panel`}>
+          <EditorialPanel label={`Root ${id}`} eyebrow="Eyebrow" title="Panel title" text="Panel text" />
+          <a href="#panel" id={`${id}-panel-link`}>Panel link</a>
+        </aside>
+        <ul>{["one", "two", "three"].map((x) => <li key={x}><ItemLink href={`#${x}`} itemId={`${id}-${x}`} className="wl-row">{x}</ItemLink></li>)}</ul>
       </main>
     </div>
   );
@@ -63,23 +66,23 @@ function DialogDemo({ id }: { id: string }) {
   );
 }
 
-const roots = new Map<string, { root: Root; props: Partial<ConsoleRootProps> }>();
+const roots = new Map<string, { root: Root; props: Partial<FolioRootProps> }>();
 const diagnostics: (Diagnostic & { id: string })[] = [];
 function render(id: string) {
   const entry = roots.get(id)!;
   entry.root.render(
-    <ConsoleRoot {...entry.props} id={`root-${id}`} onDiagnostic={(d) => diagnostics.push({ id, ...d })}>
+    <FolioRoot {...entry.props} id={`root-${id}`} onDiagnostic={(d) => diagnostics.push({ id, ...d })}>
       <Content id={id} />
-    </ConsoleRoot>,
+    </FolioRoot>,
   );
 }
 const api = {
   ready,
-  mount(id: string, slot: string, props: Partial<ConsoleRootProps> = {}) {
+  mount(id: string, slot: string, props: Partial<FolioRootProps> = {}) {
     const root = createRoot(document.getElementById(slot)!);
     roots.set(id, { root, props }); render(id);
   },
-  update(id: string, props: Partial<ConsoleRootProps>) { roots.get(id)!.props = props; render(id); },
+  update(id: string, props: Partial<FolioRootProps>) { roots.get(id)!.props = props; render(id); },
   unmount(id: string) { roots.get(id)?.root.unmount(); roots.delete(id); },
   faceSets: () => registeredFaceSets(),
   diagnostics,
