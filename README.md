@@ -43,7 +43,7 @@ One file, no installation, no network: [`folio-kit.html`](folio-kit.html) (about
 - **the font and logo files must be selected again**: a browser does not keep access to files from your disk. Until you select them, a font role without its file keeps Folio's default, and the logo shows the product name as text;
 - the shipped defaults and the example configuration are always available, since they are inside the file.
 
-**Which version is it?** The file names the commit it was built from in its first lines and on the *Overview* page (`folio-kit-source`). [Rebuilding it](#the-html-file-is-generated) from that commit gives the same bytes.
+**Which version is it?** The file names the commit it was built from in its first lines and on the *Overview* page (`folio-kit-source`). [Rebuilding it](#the-html-file-is-generated) from that commit gives the same bytes. Its *Licences* section carries Folio's MIT licence and every third-party licence.
 
 ## About Folio
 

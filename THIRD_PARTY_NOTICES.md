@@ -27,7 +27,7 @@ The HTML file is the demo, built with everything it needs inside one page. In ad
 - **React 19.2.0, React DOM 19.2.0 and Scheduler 0.27.0** (MIT, copyright Meta Platforms, Inc. and affiliates): [licenses/react-MIT.txt](licenses/react-MIT.txt), copied from the packages' `LICENSE` files (identical in the three packages). In the package itself React is a peer dependency supplied by the consumer and is not shipped.
 - the example configuration's font, **DM Sans** (latin subset, OFL-1.1, same file and licence as above), and the example's original synthetic logos.
 
-The page shows these notices and licence texts in its *Licences* section, so they travel with the file.
+The page's *Licences* section (on *Overview*) shows Folio's own [LICENSE](LICENSE) (MIT, with its copyright line), this file and every licence text listed here, so they travel with the single file.
 
 ## Code and styles from WakoLab repositories
 

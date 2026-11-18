@@ -17,6 +17,7 @@ import "./demo.css";
 import { StrictMode, useEffect, useMemo, useState, type ReactNode } from "react";
 import { EXAMPLE_FILES, KIT, loadExample } from "folio-demo-env";
 import { decodeConfig, encodeConfig, fileName, namedFiles, withFiles } from "./env/shared";
+import licence from "../../LICENSE?raw";
 import notices from "../../THIRD_PARTY_NOTICES.md?raw";
 import dmSansLicence from "../../licenses/dm-sans-OFL-1.1.txt?raw";
 import serifLicence from "../../licenses/source-serif-4-OFL-1.1.txt?raw";
@@ -52,8 +53,10 @@ function readHash(): DemoState {
 const hashOf = (s: DemoState) => `#screen=${s.screen}&mode=${s.mode}&config=${s.config}${s.local ? `&local=${s.local}` : ""}`;
 /** Font and logo files selected from the disk, by file name, as blob: URLs (memory only). */
 type LocalFiles = Map<string, { name: string; url: string }>;
+// Folio's own LICENSE first, read from the repository file, so that the MIT notice travels with the
+// single HTML file (Revex's H-R1 on #7); then every third-party notice and licence text.
 const LICENCES: [string, string][] = [
-  ["Third-party notices", notices], ["DM Sans (OFL-1.1)", dmSansLicence], ["Source Serif 4 (OFL-1.1)", serifLicence],
+  ["Folio (MIT): LICENSE", licence], ["Third-party notices", notices], ["DM Sans (OFL-1.1)", dmSansLicence], ["Source Serif 4 (OFL-1.1)", serifLicence],
   ["Noto Sans SC (OFL-1.1)", scLicence], ["Noto Sans Devanagari (OFL-1.1)", devanagariLicence],
   ["Tailwind CSS (MIT)", tailwindLicence], ["React, React DOM, Scheduler (MIT; in the HTML file only)", reactLicence],
 ];
@@ -150,7 +153,7 @@ function Overview({ state, go, files, addFiles, problem, setProblem }: {
       </section>
       <section className="demo-card" aria-labelledby="ov-licences">
         <h2 id="ov-licences">Licences</h2>
-        <p className="wl-meta-text">Folio's own code is MIT. The fonts, Tailwind CSS output and, in the offline file, React keep their own licences:</p>
+        <p className="wl-meta-text">Folio's own code and documentation are MIT (LICENSE, below). The fonts, the Tailwind CSS output and, in the offline file, React keep their own licences:</p>
         {LICENCES.map(([title, text]) => (
           <details key={title} className="demo-licence"><summary>{title}</summary><pre className="demo-code">{text}</pre></details>
         ))}

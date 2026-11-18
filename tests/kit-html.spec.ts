@@ -80,6 +80,37 @@ test("file://, network cut: the eight screens by the menu, light and dark, embed
   await context.close();
 });
 
+test("the notices travel with the file: Folio's MIT LICENSE and every third-party licence (H-R1 on #7)", async ({ browser }) => {
+  // In the generated artifact itself: the complete LICENSE text, copyright line included.
+  const bytes = readFileSync(KIT, "utf8");
+  const licence = readFileSync("LICENSE", "utf8");
+  expect(licence).toContain("Copyright (c) 2026 WakoLab-DesignSystems");
+  // The bundle stores the text as a JavaScript string (line breaks escaped), so the bytes are searched
+  // line by line; the exact, complete text is compared below, as the page displays it.
+  for (const line of licence.split("\n").filter((l) => l.trim()))
+    expect(bytes.includes(line), `LICENSE line in folio-kit.html: ${line.slice(0, 60)}`).toBe(true);
+  expect(bytes.includes("Copyright (c) 2026 WakoLab-DesignSystems"), "the copyright line is in folio-kit.html").toBe(true);
+  // Readable from the file alone (file://, network cut): each Licences entry shows its whole text,
+  // exactly as in the repository file.
+  const { context, requests } = await offline(browser);
+  const { page } = await openKit(context, "screen=overview&mode=light&config=default");
+  const section = page.locator("section", { has: page.getByRole("heading", { name: "Licences", exact: true }) });
+  for (const [summary, file] of [
+    ["Folio (MIT): LICENSE", "LICENSE"], ["Third-party notices", "THIRD_PARTY_NOTICES.md"], ["DM Sans (OFL-1.1)", "licenses/dm-sans-OFL-1.1.txt"],
+    ["Source Serif 4 (OFL-1.1)", "licenses/source-serif-4-OFL-1.1.txt"], ["Noto Sans SC (OFL-1.1)", "licenses/noto-sans-sc-OFL-1.1.txt"],
+    ["Noto Sans Devanagari (OFL-1.1)", "licenses/noto-sans-devanagari-OFL-1.1.txt"], ["Tailwind CSS (MIT)", "licenses/tailwindcss-MIT.txt"],
+    ["React, React DOM, Scheduler (MIT; in the HTML file only)", "licenses/react-MIT.txt"],
+  ]) {
+    const details = section.locator("details", { has: page.locator("summary", { hasText: summary }) });
+    await expect(details, summary).toHaveCount(1);
+    await details.locator("summary").click();
+    await expect(details.locator("pre")).toBeVisible();
+    expect(await details.locator("pre").textContent(), file).toBe(readFileSync(file, "utf8"));
+  }
+  expect(foreign(requests)).toEqual([]);
+  await context.close();
+});
+
 test("file://: the embedded example configuration applies its colours, display font and logo", async ({ browser }) => {
   const { context, requests } = await offline(browser);
   const { page } = await openKit(context, "screen=overview&mode=light&config=default");

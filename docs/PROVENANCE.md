@@ -99,6 +99,6 @@ The build (`scripts/build.mjs`, copied from Console) prefixes every selector wit
 ## Single HTML file ([#6](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/issues/6))
 
 Following the integrated kit standard at `8e3b818ece8dbb57f48a2dc779ee743fe441aba4` (DIRECTIONS §4, KIT_PROPOSAL §2):
-- `scripts/build-html.mjs`, `examples/demo/env/` (`http.ts`, `offline.ts`, `shared.ts`), the *Your configuration* and *Licences* sections of the demo, and `tests/kit-html.spec.ts`: **original**.
+- `scripts/build-html.mjs`, `examples/demo/env/` (`http.ts`, `offline.ts`, `shared.ts`), the *Your configuration* and *Licences* sections of the demo, and `tests/kit-html.spec.ts`: **original**. The *Licences* section embeds the repository's own `LICENSE` as well as the third-party texts (Revex's H-R1 on #7).
 - `folio-kit.html`: **generated** from `examples/demo/` and `dist/` by that script; it embeds the source commit and the standard commit. It inlines the default fonts and Tailwind output listed above, the example configuration with its font and synthetic logos, and React, React DOM and Scheduler (MIT, [licenses/react-MIT.txt](../licenses/react-MIT.txt)); see [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
 - `docs/screenshots/kit-*.png`: captured from that file (no icon artwork: Folio ships none).
