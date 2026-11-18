@@ -50,6 +50,8 @@ export default defineConfig({
       { find: /^wakolab-design-systems-folio\/folio\.css$/, replacement: resolve(dist, "folio.css") },
       { find: /^wakolab-design-systems-folio$/, replacement: resolve(dist, "index.js") },
       { find: /^parity-sys$/, replacement: resolve(root, "parity/fixture/folio-sys.tsx") },
+      // HTTP mode of the demo; scripts/build-html.mjs maps this to demo/env/offline.ts instead.
+      { find: /^folio-demo-env$/, replacement: resolve(root, "demo/env/http.ts") },
     ],
   },
   server: { host: "127.0.0.1", port: 5191, strictPort: true, fs: { allow: [resolve(__dirname, "..")] } },

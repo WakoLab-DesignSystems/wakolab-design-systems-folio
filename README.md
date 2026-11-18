@@ -3,10 +3,10 @@ Folio: an editorial design system with expressive typography and configurable li
 
 ## Status
 
-**Extraction candidate** for [#1](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/issues/1), under review, not released.
+**Extraction integrated in `dev`** ([#1](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/issues/1), `0856c72`), not released. The single HTML file is a **candidate** for [#6](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/issues/6), under review.
 
 - **What was extracted:** Folio's components, styles, fonts and neutral compositions, from the WakoLab frontend at `e492bec`.
-- **Mechanisms:** copied, with attribution, from the Console design system at `018fe32`, following the [standard](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-standard) at `c2ca848`. Provenance is in [docs/PROVENANCE.md](docs/PROVENANCE.md) and parity evidence in [docs/PARITY.md](docs/PARITY.md).
+- **Mechanisms:** copied, with attribution, from the Console design system at `018fe32`, following the [standard](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-standard) at `c2ca848`; the HTML file follows the integrated kit standard at `8e3b818`, the version this repository now declares. Provenance is in [docs/PROVENANCE.md](docs/PROVENANCE.md) and parity evidence in [docs/PARITY.md](docs/PARITY.md).
 - **How to use it:** the package is `private`; use it from a clone or a Git dependency.
 
 **The kit is not complete yet.**
@@ -14,11 +14,36 @@ Folio: an editorial design system with expressive typography and configurable li
 | Kit element | State |
 |---|---|
 | Library, configuration contract, design rules, demo with a menu, checks | In this repository |
-| Single offline HTML file (`folio-kit.html`) | **Not delivered yet**: later batch (standard#6) |
+| Single offline HTML file (`folio-kit.html`) | **Candidate** for [#6](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-folio/issues/6), under review: see [Try it without installing](#try-it-without-installing) |
 | Docker start | **Not delivered yet**: later batch |
 | Figma companion (`.fig`) | **Not delivered yet**: after the standard's Figma spike |
-| README screenshots | Not delivered yet |
+| README screenshots | Light, dark and example configuration, below (taken from the HTML file) |
 | Icon artwork | **Excluded**: see [Icons](#icons) |
+
+## Try it without installing
+
+One file, no installation, no network: [`folio-kit.html`](folio-kit.html) (about 7 MB) contains the whole demo, its scripts and styles, every default font, and the example configuration with its font and logos.
+
+| Light | Dark | Example configuration |
+|---|---|---|
+| ![Folio collection screen in light mode](docs/screenshots/kit-light.png) | ![Folio collection screen in dark mode](docs/screenshots/kit-dark.png) | ![Folio article screen with the example configuration: brown accents, a sans display face and the example logo](docs/screenshots/kit-example.png) |
+
+**Download and open it**
+1. Open [`folio-kit.html`](folio-kit.html) on GitHub and use **Download raw file** (GitHub shows the file's source, not the running page).
+2. Double-click the downloaded file. It opens in your browser from your disk (`file://`) and works offline; it makes no network request.
+3. Use the menu to visit the eight screens: overview, collection, article, form, message, states, components and the editorial frame. Switch light and dark with **Appearance** in the header.
+
+**Use your own configuration, logo and fonts** (on the *Overview* page, section *Configuration*)
+1. Under *Your configuration*, choose a `design-config.json` with **Configuration file**. Its colours apply at once. To start from the example, download its files from the links in the same section, then edit them.
+2. Choose the font and logo files that the configuration names with **Font and logo files**. A file is matched by its file name; a list shows which named files are selected and which are not yet.
+3. Everything stays on your computer: the files are read in memory, nothing is uploaded.
+
+**What a reload keeps.** Navigating between screens keeps everything. After a reload (or reopening a bookmarked address):
+- the screen, the mode and your configuration's values come back, because they are written in the page address (`#…&config=local&local=…`);
+- **the font and logo files must be selected again**: a browser does not keep access to files from your disk. Until you select them, a font role without its file keeps Folio's default, and the logo shows the product name as text;
+- the shipped defaults and the example configuration are always available, since they are inside the file.
+
+**Which version is it?** The file names the commit it was built from in its first lines and on the *Overview* page (`folio-kit-source`). [Rebuilding it](#the-html-file-is-generated) from that commit gives the same bytes. Its *Licences* section carries Folio's MIT licence and every third-party licence.
 
 ## About Folio
 
@@ -134,17 +159,27 @@ Folio ships **no icon artwork**. The provenance of the frontend's icon paths is 
 npm run build && npm run example
 ```
 
-Open `http://127.0.0.1:5191/demo/`.
+Open `http://127.0.0.1:5191/demo/`. This HTTP demo and the HTML file are the same source (`examples/demo/`); only the loading differs: over HTTP, the example configuration is read from `examples/config/` at `/design/` at each load.
 - **Menu:** reaches the presentation page and every screen: collection, article, form, message, states, components and the editorial frame.
 - **State:** the screen, the mode and the configuration choice (shipped defaults, or the example in `examples/config/`) are kept in the URL hash, so they survive navigation and a reload.
-- **Not in the demo yet:** editing values in the page and choosing local font and logo files. They belong to the later HTML-file kit target.
+- **Your own files:** the *Configuration* section accepts a local `design-config.json` and its font and logo files, in both modes (see [Try it without installing](#try-it-without-installing)).
+- **Not in the demo yet:** editing values field by field in the page.
+
+### The HTML file is generated
+
+`folio-kit.html` is built from the demo source by `scripts/build-html.mjs` (standard [DIRECTIONS §4](https://github.com/WakoLab-DesignSystems/wakolab-design-systems-standard/blob/8e3b818ece8dbb57f48a2dc779ee743fe441aba4/docs/DIRECTIONS.md#4-demo-html-file-and-docker)). Do not edit it by hand.
+- **Two commits per change:** commit the source first, then run `npm run kit` and commit `folio-kit.html` alone. The script refuses a working tree with uncommitted changes, so the source commit it embeds is exact.
+- **Reproducible:** in a clean clone checked out at the embedded source commit, with Node 24, `npm ci && npm run kit` rebuilds a byte-identical file (same SHA-256). It contains no timestamp or machine path.
+- **Offline by construction:** scripts, styles, fonts and images are inlined as `data:` URLs, and a Content-Security-Policy in the page allows nothing else (plus `blob:` for your own files).
+- Published history is never rewritten: a correction adds a new source commit and a new generated commit.
 
 ## Checks
 
 | Command | What it checks |
 |---|---|
 | `npm run check` | Type check |
-| `npm test` | Package closure (`check-dist`), icon artwork exclusion (`check-artwork`), configuration schema with positive and negative cases (`check-schema`), contrast of the shipped defaults (`theme-tokens`, 52 pairs), and the Playwright suites: defaults (axe, reflow, identity, menu, panel, overlays, motion), configuration (including the panel roles) and isolation |
+| `npm test` | Package closure (`check-dist`), icon artwork exclusion (`check-artwork`), configuration schema with positive and negative cases (`check-schema`), contrast of the shipped defaults (`theme-tokens`, 52 pairs), and the Playwright suites: defaults (axe, reflow, identity, menu, panel, overlays, motion), configuration (including the panel roles), isolation, and the delivered HTML file opened from `file://` with the network cut (eight screens, light and dark, embedded resources, no request, local files kept while navigating and selected again after a reload, axe and reflow of the presentation page) |
+| `npm run kit` | Builds `dist/` and the single HTML file `folio-kit.html` from the committed source |
 | `npm run consumer` | Clones this repository into an empty folder, installs and checks it there, packs it, then builds and checks two neutral consumer apps (tarball and Git dependency) |
 | `npm run parity` | Visual parity with the frontend's Folio baselines (needs a separate frontend checkout; see [docs/PARITY.md](docs/PARITY.md)) |
 

@@ -19,6 +19,9 @@
     "paths": {
       "parity-sys": [
         "./examples/parity/fixture/folio-sys.tsx"
+      ],
+      "folio-demo-env": [
+        "./examples/demo/env/http.ts"
       ]
     }
   },
